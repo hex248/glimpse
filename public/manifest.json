@@ -1,0 +1,10 @@
+{
+    "name": "glimpse",
+    "short_name": "glimpse",
+    "description": "glimpse - post your photos!",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#ffffff",
+    "icons": []
+}

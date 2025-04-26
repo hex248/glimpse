@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Rubik } from "next/font/google";
 import "./globals.css";
 
@@ -12,6 +12,11 @@ const rubik = Rubik({
 export const metadata: Metadata = {
     title: "glimpse",
     description: "glimpse - post your photos!",
+    manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
+    themeColor: "#ffffff",
 };
 
 export default function RootLayout({
