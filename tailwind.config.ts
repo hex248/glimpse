@@ -10,6 +10,11 @@ module.exports = {
             fontFamily: {
                 sans: ["var(--font-rubik)"],
             },
+            colors: {
+                foreground: "var(--foreground)",
+                background: "var(--background)",
+                destructive: "var(--destructive)",
+            },
         },
     },
     plugins: [],
