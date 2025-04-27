@@ -1,11 +1,12 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { IconLogout2 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import GoogleSignIn from "./GoogleSignIn";
+import { ThemeToggle } from "./ui/theme-toggle";
 
 export default function Header() {
     const [user, setUser] = useState<any>(null);
@@ -20,7 +21,7 @@ export default function Header() {
     }, [status]);
 
     return (
-        <div className="w-full h-[50px] flex items-center justify-between p-2">
+        <div className="w-full h-[50px] flex items-center justify-between p-2 border-b border-accent">
             <h1 className="text-3xl font-900">glimpse</h1>
             <div className="flex flex-row items-center justify-center gap-2">
                 {status === "loading" && "Loading..."}
@@ -32,8 +33,8 @@ export default function Header() {
                                 <Image
                                     src={user.image}
                                     alt="Profile picture"
-                                    width={40}
-                                    height={40}
+                                    width={35}
+                                    height={35}
                                     className="rounded-full"
                                 />
                             )}
@@ -53,6 +54,7 @@ export default function Header() {
                         </Button>
                     </>
                 )}
+                <ThemeToggle />
             </div>
         </div>
     );

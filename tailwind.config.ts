@@ -14,6 +14,8 @@ const config: Config = {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
                 destructive: "var(--destructive)",
+                muted: "var(--muted)",
+                accent: "var(--accent)",
             },
         },
     },

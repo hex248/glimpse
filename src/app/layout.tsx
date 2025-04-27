@@ -3,6 +3,8 @@ import type { Metadata, Viewport } from "next";
 import { Rubik } from "next/font/google";
 import AuthProvider from "@/components/AuthProvider";
 import Header from "@/components/Header";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const rubik = Rubik({
     subsets: ["latin"],
@@ -27,15 +29,18 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html
-            lang="en"
-            className={`${rubik.variable} bg-background text-foreground`}
-            suppressHydrationWarning
-        >
+        <html lang="en" suppressHydrationWarning>
             <body className={`${rubik.variable} antialiased font-sans`}>
                 <AuthProvider>
-                    <Header />
-                    {children}
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="system"
+                        enableSystem
+                        disableTransitionOnChange
+                    >
+                        <Header />
+                        {children}
+                    </ThemeProvider>
                 </AuthProvider>
             </body>
         </html>
