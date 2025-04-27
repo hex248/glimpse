@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Rubik } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
+import Header from "@/components/Header";
 
 const rubik = Rubik({
     subsets: ["latin"],
@@ -28,7 +29,10 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${rubik.variable}`}>
             <body className="antialiased font-sans">
-                <AuthProvider>{children}</AuthProvider>
+                <AuthProvider>
+                    <Header />
+                    {children}
+                </AuthProvider>
             </body>
         </html>
     );
