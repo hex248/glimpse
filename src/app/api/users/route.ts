@@ -26,8 +26,6 @@ export async function POST(request: Request) {
         );
     }
 
-    console.log(body);
-
     const validationResult = UserCreateSchema.safeParse(body);
 
     if (!validationResult.success) {

@@ -25,6 +25,7 @@ export const authOptions: AuthOptions = {
                 session.user.name = user.name;
                 session.user.username = user.username;
                 session.user.color = user.color;
+                session.user.bio = user.bio;
             }
             return session;
         },

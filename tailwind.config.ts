@@ -16,6 +16,8 @@ const config: Config = {
                 destructive: "var(--destructive)",
                 muted: "var(--muted)",
                 accent: "var(--accent)",
+                secondary: "var(--secondary)",
+                popover: "var(--popover)",
             },
         },
     },

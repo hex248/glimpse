@@ -41,6 +41,7 @@ export const UserUpdateSchema = z
             .max(50, "Name cannot exceed 50 characters")
             .optional()
             .nullable(),
+        bio: z.string().max(160, "Bio cannot exceed 160 characters").optional(),
         color: z
             .string()
             .regex(/^#[0-9A-F]{6}$/i, "Invalid color format (must be #RRGGBB)")
@@ -69,10 +70,14 @@ export const profileSchema = z.object({
         .string()
         .min(1, "Name cannot be empty")
         .max(50, "Name cannot exceed 50 characters"),
-    bio: z.string().max(160, "Bio cannot exceed 160 characters").optional(),
+    bio: z.string().max(160, "Bio cannot exceed 160 characters"),
+    color: z
+        .string()
+        .regex(/^#[0-9A-F]{6}$/i, "Invalid color format (must be #RRGGBB)")
+        .optional(),
 });
 
-export const profileCompletionSchema = z.object({
+export const profileUpdateSchema = z.object({
     username: z
         .string()
         .min(2, "Username must be 2-30 characters long")
@@ -85,9 +90,9 @@ export const profileCompletionSchema = z.object({
         .string()
         .min(1, "Name cannot be empty")
         .max(50, "Name cannot exceed 50 characters"),
-    bio: z
+    bio: z.string().max(160, "Bio cannot exceed 160 characters"),
+    color: z
         .string()
-        .max(160, "Bio cannot exceed 160 characters")
-        .optional()
-        .nullable(),
+        .regex(/^#[0-9A-F]{6}$/i, "Invalid color format (must be #RRGGBB)")
+        .optional(),
 });

@@ -1,4 +1,4 @@
-import AuthStatus from "@/components/AuthStatus";
+"use client";
 
 export default function Home() {
     return (
