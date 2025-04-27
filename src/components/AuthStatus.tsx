@@ -29,7 +29,7 @@ export default function AuthStatus() {
                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                     {user?.username}
                 </span>
-                <Button onClick={() => signOut()} variant="default">
+                <Button onClick={() => signOut()} variant="outline">
                     Sign out
                 </Button>
             </div>
