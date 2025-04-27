@@ -22,6 +22,7 @@ export const authOptions: AuthOptions = {
         async session({ session, user }) {
             if (session.user) {
                 session.user.id = user.id;
+                session.user.name = user.name;
                 session.user.username = user.username;
                 session.user.color = user.color;
             }
@@ -29,7 +30,9 @@ export const authOptions: AuthOptions = {
         },
     },
 
-    debug: process.env.NODE_ENV === "development",
+    pages: {
+        newUser: "/create-profile",
+    },
 
     secret: process.env.NEXTAUTH_SECRET,
 };

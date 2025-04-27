@@ -1,7 +1,7 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from "tailwindcss";
+
+const config: Config = {
     content: [
-        "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
         "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
         "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
@@ -11,11 +11,13 @@ module.exports = {
                 sans: ["var(--font-rubik)"],
             },
             colors: {
-                foreground: "var(--foreground)",
                 background: "var(--background)",
+                foreground: "var(--foreground)",
                 destructive: "var(--destructive)",
             },
         },
     },
     plugins: [],
 };
+
+export default config;

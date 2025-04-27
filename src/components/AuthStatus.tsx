@@ -1,8 +1,9 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
-import Button from "@/components/Button";
+import { Button } from "@/components/ui/button";
+import GoogleSignIn from "./GoogleSignIn";
 
 export default function AuthStatus() {
     const { data: session, status } = useSession();
@@ -25,6 +26,9 @@ export default function AuthStatus() {
                         className="rounded-full"
                     />
                 )}
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    {user?.username}
+                </span>
                 <Button onClick={() => signOut()} variant="default">
                     Sign out
                 </Button>
@@ -34,9 +38,7 @@ export default function AuthStatus() {
 
     return (
         <div>
-            <Button onClick={() => signIn("google")} variant="default">
-                Sign in with Google
-            </Button>
+            <GoogleSignIn />
         </div>
     );
 }

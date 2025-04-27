@@ -14,8 +14,9 @@ model User {
     emailVerified DateTime?
     image         String? // provided by NextAuth (OAuth profile picture)
 
-    username String?  @unique
+    username String? @unique
     color    String? @default("#FFFFFF")
+    bio      String? @db.Text
 
     accounts Account[]
     sessions Session[]

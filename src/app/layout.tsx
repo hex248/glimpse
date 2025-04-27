@@ -1,6 +1,6 @@
+import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Rubik } from "next/font/google";
-import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import Header from "@/components/Header";
 
@@ -27,8 +27,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className={`${rubik.variable}`}>
-            <body className="antialiased font-sans">
+        <html
+            lang="en"
+            className={`${rubik.variable} bg-background text-foreground`}
+            suppressHydrationWarning
+        >
+            <body className={`${rubik.variable} antialiased font-sans`}>
                 <AuthProvider>
                     <Header />
                     {children}
