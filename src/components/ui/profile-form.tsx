@@ -227,7 +227,26 @@ export default function ProfileForm({
                                 <FormItem>
                                     <FormLabel>Profile Color</FormLabel>
                                     <FormControl>
-                                        <div className="flex flex-wrap items-start gap-4">
+                                        <div className="flex flex-col items-start gap-4">
+                                            <div
+                                                className="flex items-center border-3 rounded-md overflow-hidden"
+                                                style={{
+                                                    borderColor: color,
+                                                }}
+                                            >
+                                                <span className="border-r px-3 py-2 bg-muted text-muted-foreground">
+                                                    #
+                                                </span>
+                                                <HexColorInput
+                                                    className="w-24 px-3 py-2 outline-none bg-transparent"
+                                                    color={color}
+                                                    onChange={(_color) => {
+                                                        setColor(_color);
+                                                        field.onChange(_color);
+                                                    }}
+                                                    disabled={!editing}
+                                                />
+                                            </div>
                                             <AnimatePresence>
                                                 {editing && (
                                                     <motion.div
@@ -266,25 +285,6 @@ export default function ProfileForm({
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
-                                            <div
-                                                className="flex items-center border-3 rounded-md overflow-hidden"
-                                                style={{
-                                                    borderColor: color,
-                                                }}
-                                            >
-                                                <span className="border-r px-3 py-2 bg-muted text-muted-foreground">
-                                                    #
-                                                </span>
-                                                <HexColorInput
-                                                    className="w-24 px-3 py-2 outline-none bg-transparent"
-                                                    color={color}
-                                                    onChange={(_color) => {
-                                                        setColor(_color);
-                                                        field.onChange(_color);
-                                                    }}
-                                                    disabled={!editing}
-                                                />
-                                            </div>
                                         </div>
                                     </FormControl>
                                     <FormMessage />
