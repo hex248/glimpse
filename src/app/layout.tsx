@@ -13,7 +13,7 @@ const rubik = Rubik({
 
 export const metadata: Metadata = {
     title: "glimpse",
-    description: "glimpse - post your photos!",
+    description: "glimpse - share your photos!",
     manifest: "/manifest.json",
 };
 

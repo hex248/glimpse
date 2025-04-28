@@ -52,7 +52,7 @@ export default function Header() {
                                                 buttonVariants({
                                                     variant: "outline",
                                                 }),
-                                                "flex items-center gap-2 px-3 py-5"
+                                                "flex items-center gap-2 px-2 py-5"
                                             )}
                                         >
                                             {session.user.image && (

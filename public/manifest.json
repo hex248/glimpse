@@ -1,7 +1,7 @@
 {
     "name": "glimpse",
     "short_name": "glimpse",
-    "description": "glimpse - post your photos!",
+    "description": "glimpse - share your photos!",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#000000",
