@@ -15,7 +15,7 @@ model User {
     image         String? // provided by NextAuth (OAuth profile picture)
 
     username String? @unique
-    color    String? @default("#FFFFFF")
+    color    String? @default("#aa6ef1")
     bio      String? @db.Text
 
     accounts Account[]

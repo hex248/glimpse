@@ -45,7 +45,7 @@ export default function ProfileForm({
     const [username, setUsername] = useState("");
     const [name, setName] = useState("");
     const [bio, setBio] = useState("");
-    const [color, setColor] = useState("#FFFFFF");
+    const [color, setColor] = useState("#aa6ef1");
 
     const form = useForm<z.infer<typeof profileSchema>>({
         resolver: zodResolver(profileSchema),
@@ -53,7 +53,7 @@ export default function ProfileForm({
             username: "",
             name: "",
             bio: "",
-            color: "#FFFFFF",
+            color: "#aa6ef1",
         },
     });
 
@@ -114,7 +114,7 @@ export default function ProfileForm({
             let initialName = user?.name || "";
             let initialUsername = user?.username || "";
             let initialBio = user?.bio || "";
-            let initialColor = user?.color || "#FFFFFF";
+            let initialColor = user?.color || "#aa6ef1";
 
             if (user?.email && !initialUsername) {
                 const emailPrefix = user.email.split("@")[0];
