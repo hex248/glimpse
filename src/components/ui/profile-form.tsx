@@ -22,6 +22,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Textarea } from "./textarea";
 import { APP_PATHS } from "@/lib/APP_PATHS";
+import { ProfileColorButton } from "./profile-color-button";
 
 export default function ProfileForm({
     fields = ["username", "name", "bio", "color"],
@@ -294,22 +295,24 @@ export default function ProfileForm({
 
                     <div className="mt-5">
                         {editing ? (
-                            <Button
-                                variant="outline"
+                            <ProfileColorButton
+                                variant="profileSolid"
                                 type="submit"
                                 disabled={form.formState.isSubmitting}
+                                profileColor={color}
                             >
                                 {form.formState.isSubmitting
                                     ? "Saving..."
                                     : submitButtonText || "Save Changes"}
-                            </Button>
+                            </ProfileColorButton>
                         ) : (
-                            <Button
-                                variant="outline"
+                            <ProfileColorButton
+                                variant="profileSolid"
                                 onClick={handleEditToggle}
+                                profileColor={color}
                             >
                                 Edit Profile
-                            </Button>
+                            </ProfileColorButton>
                         )}
                     </div>
                 </form>
