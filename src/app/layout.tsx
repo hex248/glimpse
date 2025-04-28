@@ -31,7 +31,7 @@ export default function RootLayout({
             <body className={`${rubik.variable} antialiased font-sans`}>
                 <AuthProvider>
                     <Header />
-                    {children}
+                    <div className="p-5">{children}</div>
                 </AuthProvider>
             </body>
         </html>

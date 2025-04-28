@@ -1,10 +1,10 @@
 "use client";
 
 import { HexColorInput, HexColorPicker } from "react-colorful";
-
+import { motion, AnimatePresence } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { set, z } from "zod";
+import { z } from "zod";
 import { profileSchema } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +26,7 @@ import { APP_PATHS } from "@/lib/APP_PATHS";
 export default function ProfileForm({
     fields = ["username", "name", "bio", "color"],
     submitButtonText,
-    setEditing,
+    setEditing: setParentEditing,
     redirectHome,
     startReadOnly = true,
 }: {
@@ -39,34 +39,27 @@ export default function ProfileForm({
     const { data: session, status, update } = useSession();
     const router = useRouter();
 
-    const [editing, setEditingState] = useState(!startReadOnly);
+    const [editing, setEditing] = useState(!startReadOnly);
 
-    const [username, setUsername] = useState(session?.user?.username || "");
-    const [usernameType, setUsernameType] = useState<string>();
-    const [name, setName] = useState(session?.user?.name || "");
-    const [bio, setBio] = useState(session?.user?.bio || "");
-    const [color, setColor] = useState(session?.user?.color || "");
+    const [username, setUsername] = useState("");
+    const [name, setName] = useState("");
+    const [bio, setBio] = useState("");
+    const [color, setColor] = useState("#FFFFFF");
 
     const form = useForm<z.infer<typeof profileSchema>>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            username,
-            name,
-            bio,
-            color,
+            username: "",
+            name: "",
+            bio: "",
+            color: "#FFFFFF",
         },
     });
 
-    const onSubmit = async (values: z.infer<typeof profileSchema>) => {
-        const validation = profileSchema.safeParse({
-            username: values.username,
-            name: values.name,
-            bio: values.bio,
-            color: values.color,
-        });
+    const handleSaveChanges = async (values: z.infer<typeof profileSchema>) => {
+        const validation = profileSchema.safeParse(values);
         if (!validation.success) {
-            const errors = validation.error.flatten().fieldErrors;
-            console.error(errors);
+            console.error(validation.error.flatten().fieldErrors);
             return;
         }
 
@@ -80,12 +73,24 @@ export default function ProfileForm({
             const result = await response.json();
 
             if (!response.ok) {
-                console.error(result.error || "Failed to update profile.");
+                if (
+                    result.error &&
+                    result.error.includes("Username is already taken")
+                ) {
+                    form.setError("username", {
+                        type: "server",
+                        message: result.error,
+                    });
+                } else {
+                    console.error(
+                        "Server error:",
+                        result.error || "Failed to update profile."
+                    );
+                }
             } else {
                 await update();
-                // Set editing state to false after successful submission
-                setEditingState(false);
-                setEditing?.(false);
+                setEditing(false);
+                setParentEditing?.(false);
                 if (redirectHome) router.push(APP_PATHS.HOME.href);
             }
         } catch (err) {
@@ -94,40 +99,50 @@ export default function ProfileForm({
         }
     };
 
+    const handleEditToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        const newState = !editing;
+        setEditing(newState);
+        setParentEditing?.(newState);
+    };
+
     useEffect(() => {
         if (status === "authenticated") {
             const user = session.user as any;
 
-            if (!name && user?.name) {
-                setName(user.name);
-                form.setValue("name", user.name);
+            let initialName = user?.name || "";
+            let initialUsername = user?.username || "";
+            let initialBio = user?.bio || "";
+            let initialColor = user?.color || "#FFFFFF";
+
+            if (user?.email && !initialUsername) {
+                const emailPrefix = user.email.split("@")[0];
+                initialUsername = emailPrefix
+                    .replace(/[^a-zA-Z0-9_-]/g, "")
+                    .slice(0, 30);
             }
 
-            if (!username && user?.username) {
-                setUsername(user.username);
-                form.setValue("username", user.username);
-                setUsernameType("username");
-            }
+            setName(initialName);
+            setUsername(initialUsername);
+            setBio(initialBio);
+            setColor(initialColor);
 
-            if (!bio && user?.bio) {
-                setBio(user.bio);
-                form.setValue("bio", user.bio);
-            }
-
-            if (!color && user?.color) {
-                setColor(user.color);
-                form.setValue("color", user.color);
-            }
+            form.reset({
+                name: initialName,
+                username: initialUsername,
+                bio: initialBio,
+                color: initialColor,
+            });
         } else if (status === "unauthenticated") {
             router.replace("/api/auth/signin");
         }
-    }, [status, session, router, username, name]);
+    }, [status, session, router, form]);
 
     return (
         <>
             <Form {...form}>
                 <form
-                    onSubmit={form.handleSubmit(onSubmit)}
+                    onSubmit={form.handleSubmit(handleSaveChanges)}
                     className="flex flex-col gap-4 w-[95%]"
                 >
                     {fields.includes("username") && (
@@ -139,7 +154,7 @@ export default function ProfileForm({
                                     <FormLabel>Username *</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder={username}
+                                            placeholder="Your unique username"
                                             {...field}
                                         />
                                     </FormControl>
@@ -162,7 +177,10 @@ export default function ProfileForm({
                                 <FormItem>
                                     <FormLabel>Full Name *</FormLabel>
                                     <FormControl>
-                                        <Input placeholder={name} {...field} />
+                                        <Input
+                                            placeholder="Your full name"
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                     {editing && (
@@ -184,7 +202,7 @@ export default function ProfileForm({
                                     <FormLabel>Bio</FormLabel>
                                     <FormControl>
                                         <Textarea
-                                            placeholder={bio}
+                                            placeholder="Tell us about yourself"
                                             {...field}
                                         />
                                     </FormControl>
@@ -208,65 +226,92 @@ export default function ProfileForm({
                                 <FormItem>
                                     <FormLabel>Profile Color</FormLabel>
                                     <FormControl>
-                                        <div className="flex items-start gap-2">
-                                            {editing && (
-                                                <HexColorPicker
-                                                    className="rounded-lg"
+                                        <div className="flex flex-wrap items-start gap-4">
+                                            <AnimatePresence>
+                                                {editing && (
+                                                    <motion.div
+                                                        initial={{
+                                                            height: 0,
+                                                            opacity: 0,
+                                                        }}
+                                                        animate={{
+                                                            height: "auto",
+                                                            opacity: 1,
+                                                        }}
+                                                        exit={{
+                                                            height: 0,
+                                                            opacity: 0,
+                                                        }}
+                                                        transition={{
+                                                            duration: 0.3,
+                                                            ease: "easeInOut",
+                                                        }}
+                                                        className="overflow-hidden w-fit outline-none"
+                                                    >
+                                                        <HexColorPicker
+                                                            color={color}
+                                                            onChange={(
+                                                                _color
+                                                            ) => {
+                                                                setColor(
+                                                                    _color
+                                                                );
+                                                                field.onChange(
+                                                                    _color
+                                                                );
+                                                            }}
+                                                            className="rounded-none"
+                                                        />
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                            <div
+                                                className="flex items-center border-3 rounded-md overflow-hidden"
+                                                style={{
+                                                    borderColor: color,
+                                                }}
+                                            >
+                                                <span className="border-r px-3 py-2 bg-muted text-muted-foreground">
+                                                    #
+                                                </span>
+                                                <HexColorInput
+                                                    className="w-24 px-3 py-2 outline-none bg-transparent"
                                                     color={color}
                                                     onChange={(_color) => {
                                                         setColor(_color);
                                                         field.onChange(_color);
                                                     }}
+                                                    disabled={!editing}
                                                 />
-                                            )}
-                                            <div className="">
-                                                <div
-                                                    className="flex items-center border-3 w-30 rounded-md"
-                                                    style={{
-                                                        borderColor: color,
-                                                    }}
-                                                >
-                                                    <span className="border-r border-accent p-2">
-                                                        #
-                                                    </span>
-                                                    <HexColorInput
-                                                        className="w-25 p-2 outline-none"
-                                                        color={color}
-                                                        onChange={setColor}
-                                                        disabled={!editing}
-                                                    />
-                                                </div>
                                             </div>
                                         </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
-                            disabled={!editing}
                         />
                     )}
 
-                    {editing ? (
-                        <Button
-                            className="mt-5 w-fit"
-                            variant="outline"
-                            type="submit"
-                        >
-                            {submitButtonText || "Save Changes"}
-                        </Button>
-                    ) : (
-                        <Button
-                            className="mt-5 w-fit"
-                            variant="outline"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setEditingState(true);
-                                setEditing?.(true);
-                            }}
-                        >
-                            Edit Profile
-                        </Button>
-                    )}
+                    <div className="mt-5">
+                        {editing ? (
+                            <Button
+                                variant="outline"
+                                type="submit"
+                                disabled={form.formState.isSubmitting}
+                            >
+                                {form.formState.isSubmitting
+                                    ? "Saving..."
+                                    : submitButtonText || "Save Changes"}
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="outline"
+                                onClick={handleEditToggle}
+                            >
+                                Edit Profile
+                            </Button>
+                        )}
+                    </div>
                 </form>
             </Form>
         </>

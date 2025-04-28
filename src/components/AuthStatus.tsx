@@ -4,6 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import GoogleSignIn from "./GoogleSignIn";
+import { APP_PATHS } from "@/lib/APP_PATHS";
 
 export default function AuthStatus() {
     const { data: session, status } = useSession();
@@ -29,7 +30,12 @@ export default function AuthStatus() {
                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                     {user?.username}
                 </span>
-                <Button onClick={() => signOut()} variant="outline">
+                <Button
+                    onClick={() =>
+                        signOut({ callbackUrl: APP_PATHS.HOME.href })
+                    }
+                    variant="outline"
+                >
                     Sign out
                 </Button>
             </div>

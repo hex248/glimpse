@@ -73,7 +73,12 @@ export default function Header() {
                                                 Settings
                                             </DropdownMenuItem>
                                             <DropdownMenuItem
-                                                onClick={() => signOut()}
+                                                onClick={() =>
+                                                    signOut({
+                                                        callbackUrl:
+                                                            APP_PATHS.HOME.href,
+                                                    })
+                                                }
                                             >
                                                 Log out{" "}
                                                 <IconLogout2
