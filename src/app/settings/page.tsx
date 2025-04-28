@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 export default function ProfilePage() {
     const [editing, setEditing] = useState(false);
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="w-full h-full flex items-center justify-center">
             <motion.div
                 layout
                 transition={{ duration: 0.3, ease: "easeInOut" }}

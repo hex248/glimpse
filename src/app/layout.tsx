@@ -31,7 +31,9 @@ export default function RootLayout({
             <body className={`${rubik.variable} antialiased font-sans`}>
                 <AuthProvider>
                     <Header />
-                    <div className="p-5">{children}</div>
+                    <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-var(--header-height))] p-4">
+                        {children}
+                    </div>
                 </AuthProvider>
             </body>
         </html>

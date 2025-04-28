@@ -26,7 +26,7 @@ export default function Header() {
         status === "authenticated" ? (session?.user as any)?.color : null;
 
     return (
-        <div className="w-full h-[50px] flex items-center justify-between pl-3 pr-1 border-b border-accent">
+        <div className="w-full h-[var(--header-height)] flex items-center justify-between pl-3 pr-1 border-b border-accent">
             <Button
                 variant="dummy"
                 className="w-auto m-0 p-0"
