@@ -2,7 +2,6 @@
 
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
-import { IconLogout2 } from "@tabler/icons-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import GoogleSignIn from "./GoogleSignIn";
 import { useRouter } from "next/navigation";
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { ProfileColorText } from "./ui/profile-color-text";
+import { LogOut, Settings2 } from "lucide-react";
 
 export default function Header() {
     const { data: session, status } = useSession();
@@ -26,10 +26,10 @@ export default function Header() {
         status === "authenticated" ? (session?.user as any)?.color : null;
 
     return (
-        <div className="w-full h-[50px] flex items-center justify-between p-2 border-b border-accent">
+        <div className="w-full h-[50px] flex items-center justify-between pl-3 pr-1 border-b border-accent">
             <Button
                 variant="dummy"
-                className="w-32"
+                className="w-auto m-0 p-0"
                 onClick={() => router.push(APP_PATHS.HOME.href)}
             >
                 <ProfileColorText
@@ -52,26 +52,32 @@ export default function Header() {
                                                 buttonVariants({
                                                     variant: "outline",
                                                 }),
-                                                "p-5"
+                                                "flex items-center gap-2 px-3 py-5"
                                             )}
                                         >
                                             {session.user.image && (
                                                 <Image
                                                     src={session.user.image}
                                                     alt="Profile picture"
-                                                    width={30}
-                                                    height={30}
+                                                    width={28}
+                                                    height={28}
                                                     className="rounded-full"
                                                 />
                                             )}
-                                            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                            <span className="text-sm font-medium text-foreground">
                                                 {(session.user as any)
                                                     ?.username ??
                                                     session.user.name ??
                                                     ""}
                                             </span>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="flex flex-col gap-2">
+                                        <DropdownMenuContent
+                                            style={{
+                                                width: "var(--radix-dropdown-menu-trigger-width)",
+                                            }}
+                                            className="flex flex-col gap-1 items-start"
+                                            align="end"
+                                        >
                                             <DropdownMenuItem
                                                 onClick={() =>
                                                     router.push(
@@ -79,6 +85,10 @@ export default function Header() {
                                                     )
                                                 }
                                             >
+                                                <Settings2
+                                                    size={25}
+                                                    className="text-foreground"
+                                                />
                                                 Settings
                                             </DropdownMenuItem>
                                             <DropdownMenuItem
@@ -89,11 +99,11 @@ export default function Header() {
                                                     })
                                                 }
                                             >
-                                                Log out{" "}
-                                                <IconLogout2
-                                                    size={20}
+                                                <LogOut
+                                                    size={25}
                                                     className="text-foreground"
                                                 />
+                                                Log out{" "}
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
