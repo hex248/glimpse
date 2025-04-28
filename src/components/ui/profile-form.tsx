@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { Textarea } from "./textarea";
 import { APP_PATHS } from "@/lib/APP_PATHS";
 import { ProfileColorButton } from "./profile-color-button";
+import { defaultColor } from "@/lib/utils";
 
 export default function ProfileForm({
     fields = ["username", "name", "bio", "color"],
@@ -45,7 +46,7 @@ export default function ProfileForm({
     const [username, setUsername] = useState("");
     const [name, setName] = useState("");
     const [bio, setBio] = useState("");
-    const [color, setColor] = useState("#aa6ef1");
+    const [color, setColor] = useState(defaultColor);
 
     const form = useForm<z.infer<typeof profileSchema>>({
         resolver: zodResolver(profileSchema),
@@ -53,7 +54,7 @@ export default function ProfileForm({
             username: "",
             name: "",
             bio: "",
-            color: "#aa6ef1",
+            color: defaultColor,
         },
     });
 
@@ -114,7 +115,7 @@ export default function ProfileForm({
             let initialName = user?.name || "";
             let initialUsername = user?.username || "";
             let initialBio = user?.bio || "";
-            let initialColor = user?.color || "#aa6ef1";
+            let initialColor = user?.color || defaultColor;
 
             if (user?.email && !initialUsername) {
                 const emailPrefix = user.email.split("@")[0];
@@ -135,7 +136,7 @@ export default function ProfileForm({
                 color: initialColor,
             });
         } else if (status === "unauthenticated") {
-            router.replace("/api/auth/signin");
+            router.replace(APP_PATHS.HOME.href);
         }
     }, [status, session, router, form]);
 

@@ -4,4 +4,5 @@ export const APP_PATHS = {
     SIGNUP: { href: "/api/auth/signup" },
     CREATE_PROFILE: { href: "/create-profile" },
     SETTINGS: { href: "/settings" },
+    SHARE: { href: "/share" },
 };

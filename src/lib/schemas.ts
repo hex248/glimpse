@@ -96,3 +96,16 @@ export const profileUpdateSchema = z.object({
         .regex(/^#[0-9A-F]{6}$/i, "Invalid color format (must be #RRGGBB)")
         .optional(),
 });
+
+export const PhotoCreateAPISchema = z.object({
+    imageUrl: z
+        .string({ required_error: "Image URL is required" })
+        .url({ message: "Invalid image URL format" }),
+    caption: z
+        .string()
+        .max(2200, "Caption cannot exceed 2200 characters")
+        .optional()
+        .nullable(),
+});
+
+export type PhotoCreateAPIInput = z.infer<typeof PhotoCreateAPISchema>;
