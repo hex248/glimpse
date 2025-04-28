@@ -90,7 +90,7 @@ export const profileUpdateSchema = z.object({
         .string()
         .min(1, "Name cannot be empty")
         .max(50, "Name cannot exceed 50 characters"),
-    bio: z.string().max(160, "Bio cannot exceed 160 characters"),
+    bio: z.string().max(160, "Bio cannot exceed 160 characters").optional(),
     color: z
         .string()
         .regex(/^#[0-9A-F]{6}$/i, "Invalid color format (must be #RRGGBB)")

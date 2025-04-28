@@ -3,8 +3,6 @@ import type { Metadata, Viewport } from "next";
 import { Rubik } from "next/font/google";
 import AuthProvider from "@/components/AuthProvider";
 import Header from "@/components/Header";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const rubik = Rubik({
     subsets: ["latin"],
@@ -32,15 +30,8 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body className={`${rubik.variable} antialiased font-sans`}>
                 <AuthProvider>
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
-                        <Header />
-                        {children}
-                    </ThemeProvider>
+                    <Header />
+                    {children}
                 </AuthProvider>
             </body>
         </html>

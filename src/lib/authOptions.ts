@@ -23,7 +23,18 @@ export const authOptions: AuthOptions = {
             if (session.user) {
                 session.user.id = user.id;
                 session.user.name = user.name;
-                session.user.username = user.username;
+                if (user.username) {
+                    session.user.username = user.username;
+                } else {
+                    // generate a username from the email prefix
+                    const emailPrefix = user.email.split("@")[0];
+                    const sanitizedPrefix = emailPrefix.replace(
+                        /[^a-zA-Z0-9_-]/g,
+                        ""
+                    );
+                    session.user.username = sanitizedPrefix.slice(0, 30);
+                }
+
                 session.user.color = user.color;
                 session.user.bio = user.bio;
             }
@@ -32,7 +43,7 @@ export const authOptions: AuthOptions = {
     },
 
     pages: {
-        newUser: "/create-profile",
+        newUser: "/settings",
     },
 
     secret: process.env.NEXTAUTH_SECRET,

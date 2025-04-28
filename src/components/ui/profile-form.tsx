@@ -21,18 +21,25 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Textarea } from "./textarea";
+import { APP_PATHS } from "@/lib/APP_PATHS";
 
 export default function ProfileForm({
-    onSubmit,
     fields = ["username", "name", "bio", "color"],
     submitButtonText,
+    setEditing,
+    redirectHome,
+    startReadOnly = true,
 }: {
-    onSubmit?: (values: z.infer<typeof profileSchema>) => void;
     fields?: ("username" | "name" | "bio" | "color")[];
     submitButtonText?: string;
+    setEditing?: (state: boolean) => void;
+    redirectHome?: boolean;
+    startReadOnly?: boolean;
 }) {
     const { data: session, status, update } = useSession();
     const router = useRouter();
+
+    const [editing, setEditingState] = useState(!startReadOnly);
 
     const [username, setUsername] = useState(session?.user?.username || "");
     const [usernameType, setUsernameType] = useState<string>();
@@ -50,41 +57,42 @@ export default function ProfileForm({
         },
     });
 
-    if (!onSubmit) {
-        onSubmit = async (values: z.infer<typeof profileSchema>) => {
-            const validation = profileSchema.safeParse({
-                username: values.username,
-                name: values.name,
-                bio: values.bio,
-                color: values.color,
+    const onSubmit = async (values: z.infer<typeof profileSchema>) => {
+        const validation = profileSchema.safeParse({
+            username: values.username,
+            name: values.name,
+            bio: values.bio,
+            color: values.color,
+        });
+        if (!validation.success) {
+            const errors = validation.error.flatten().fieldErrors;
+            console.error(errors);
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/user/update-profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(validation.data),
             });
-            if (!validation.success) {
-                const errors = validation.error.flatten().fieldErrors;
-                console.error(errors);
-                return;
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error(result.error || "Failed to update profile.");
+            } else {
+                await update();
+                // Set editing state to false after successful submission
+                setEditingState(false);
+                setEditing?.(false);
+                if (redirectHome) router.push(APP_PATHS.HOME.href);
             }
-
-            try {
-                const response = await fetch("/api/user/update-profile", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(validation.data),
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    console.error(result.error || "Failed to update profile.");
-                } else {
-                    await update();
-                    router.push("/");
-                }
-            } catch (err) {
-                console.error(err);
-                console.error("An unexpected error occurred.");
-            }
-        };
-    }
+        } catch (err) {
+            console.error(err);
+            console.error("An unexpected error occurred.");
+        }
+    };
 
     useEffect(() => {
         if (status === "authenticated") {
@@ -95,21 +103,10 @@ export default function ProfileForm({
                 form.setValue("name", user.name);
             }
 
-            if ((!username || usernameType === "email") && user?.username) {
+            if (!username && user?.username) {
                 setUsername(user.username);
                 form.setValue("username", user.username);
                 setUsernameType("username");
-            }
-
-            if ((!username || username === "2") && user?.email) {
-                const emailPrefix = user.email.split("@")[0];
-                const sanitizedPrefix = emailPrefix.replace(
-                    /[^a-zA-Z0-9_-]/g,
-                    ""
-                );
-                setUsername(sanitizedPrefix.slice(0, 30));
-                form.setValue("username", sanitizedPrefix.slice(0, 30));
-                setUsernameType("email");
             }
 
             if (!bio && user?.bio) {
@@ -131,7 +128,7 @@ export default function ProfileForm({
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex flex-col gap-4 w-[85%]"
+                    className="flex flex-col gap-4 w-[95%]"
                 >
                     {fields.includes("username") && (
                         <FormField
@@ -147,11 +144,14 @@ export default function ProfileForm({
                                         />
                                     </FormControl>
                                     <FormMessage />
-                                    <FormDescription>
-                                        This is your public display name.
-                                    </FormDescription>
+                                    {editing && (
+                                        <FormDescription>
+                                            This is your public display name.
+                                        </FormDescription>
+                                    )}
                                 </FormItem>
                             )}
+                            disabled={!editing}
                         />
                     )}
                     {fields.includes("name") && (
@@ -165,11 +165,14 @@ export default function ProfileForm({
                                         <Input placeholder={name} {...field} />
                                     </FormControl>
                                     <FormMessage />
-                                    <FormDescription>
-                                        Your real name.
-                                    </FormDescription>
+                                    {editing && (
+                                        <FormDescription>
+                                            Your real name.
+                                        </FormDescription>
+                                    )}
                                 </FormItem>
                             )}
+                            disabled={!editing}
                         />
                     )}
                     {fields.includes("bio") && (
@@ -186,11 +189,15 @@ export default function ProfileForm({
                                         />
                                     </FormControl>
                                     <FormMessage />
-                                    <FormDescription>
-                                        Some additional information about you.
-                                    </FormDescription>
+                                    {editing && (
+                                        <FormDescription>
+                                            Some additional information about
+                                            you.
+                                        </FormDescription>
+                                    )}
                                 </FormItem>
                             )}
+                            disabled={!editing}
                         />
                     )}
                     {fields.includes("color") && (
@@ -201,16 +208,18 @@ export default function ProfileForm({
                                 <FormItem>
                                     <FormLabel>Profile Color</FormLabel>
                                     <FormControl>
-                                        <div className="flex items-center gap-2">
-                                            <HexColorPicker
-                                                className="rounded-lg"
-                                                color={color}
-                                                onChange={(_color) => {
-                                                    setColor(_color);
-                                                    field.onChange(_color);
-                                                }}
-                                            />
-                                            <div className="h-50">
+                                        <div className="flex items-start gap-2">
+                                            {editing && (
+                                                <HexColorPicker
+                                                    className="rounded-lg"
+                                                    color={color}
+                                                    onChange={(_color) => {
+                                                        setColor(_color);
+                                                        field.onChange(_color);
+                                                    }}
+                                                />
+                                            )}
+                                            <div className="">
                                                 <div
                                                     className="flex items-center border-3 w-30 rounded-md"
                                                     style={{
@@ -224,6 +233,7 @@ export default function ProfileForm({
                                                         className="w-25 p-2 outline-none"
                                                         color={color}
                                                         onChange={setColor}
+                                                        disabled={!editing}
                                                     />
                                                 </div>
                                             </div>
@@ -232,16 +242,31 @@ export default function ProfileForm({
                                     <FormMessage />
                                 </FormItem>
                             )}
+                            disabled={!editing}
                         />
                     )}
 
-                    <Button
-                        className="mt-5 w-fit"
-                        variant="outline"
-                        type="submit"
-                    >
-                        {submitButtonText || "Save Changes"}
-                    </Button>
+                    {editing ? (
+                        <Button
+                            className="mt-5 w-fit"
+                            variant="outline"
+                            type="submit"
+                        >
+                            {submitButtonText || "Save Changes"}
+                        </Button>
+                    ) : (
+                        <Button
+                            className="mt-5 w-fit"
+                            variant="outline"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setEditingState(true);
+                                setEditing?.(true);
+                            }}
+                        >
+                            Edit Profile
+                        </Button>
+                    )}
                 </form>
             </Form>
         </>
