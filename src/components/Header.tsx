@@ -16,10 +16,14 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { ProfileColorText } from "./ui/profile-color-text";
 
 export default function Header() {
     const { data: session, status } = useSession();
     const router = useRouter();
+
+    const userColor =
+        status === "authenticated" ? (session?.user as any)?.color : null;
 
     return (
         <div className="w-full h-[50px] flex items-center justify-between p-2 border-b border-accent">
@@ -28,7 +32,12 @@ export default function Header() {
                 className="w-32"
                 onClick={() => router.push(APP_PATHS.HOME.href)}
             >
-                <h1 className="text-3xl font-900">glimpse</h1>
+                <ProfileColorText
+                    profileColor={userColor}
+                    className="text-3xl font-900"
+                >
+                    glimpse
+                </ProfileColorText>
             </Button>
             <div className="flex flex-row items-center justify-center gap-2">
                 {status !== "loading" && (
