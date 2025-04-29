@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/db";
 import { PhotoCreateAPISchema } from "@/lib/schemas";
+import { revalidatePath } from "next/cache";
+import { APP_PATHS } from "@/lib/APP_PATHS";
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
@@ -42,6 +44,8 @@ export async function POST(request: Request) {
                 userId: userId,
             },
         });
+
+        revalidatePath(APP_PATHS.HOME.href);
 
         return NextResponse.json(newPhoto, { status: 201 });
     } catch (error) {
