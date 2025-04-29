@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import PhotoFeed from "@/components/photo-feed";
 import SharePhotoButton from "@/components/share-photo-button";
 
+export const revalidate = 60;
+
 export default async function Home() {
     const photos = await prisma.photo.findMany({
         orderBy: {
