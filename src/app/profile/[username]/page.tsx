@@ -6,14 +6,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { APP_PATHS } from "@/lib/APP_PATHS";
 import { defaultColor } from "@/lib/utils";
 
-interface ProfilePageProps {
-    params: {
+export default async function ProfilePage({
+    params,
+}: {
+    params: Promise<{
         username: string;
-    };
-}
-
-export default async function ProfilePage({ params }: ProfilePageProps) {
-    const username = params.username;
+    }>;
+}) {
+    const username = (await params).username;
 
     const user = await prisma.user.findUnique({
         where: {

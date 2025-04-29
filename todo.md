@@ -1,0 +1,6 @@
+-   make colour picker in a popover
+-   profile pictures
+-   add/remove friend
+-   friends list
+-   feed should only show friends' photos
+-   user search

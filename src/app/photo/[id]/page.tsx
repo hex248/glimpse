@@ -6,14 +6,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfileColorText } from "@/components/ui/profile-color-text";
 import { APP_PATHS } from "@/lib/APP_PATHS";
 
-interface PhotoPageProps {
-    params: {
-        id: string;
-    };
-}
-
-export default async function PhotoPage({ params }: PhotoPageProps) {
-    const photoId = params.id;
+export default async function PhotoPage({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
+    const photoId = (await params).id;
 
     const photo = await prisma.photo.findUnique({
         where: {
