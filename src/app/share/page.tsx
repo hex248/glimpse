@@ -25,7 +25,7 @@ function centerAspectCrop(
         makeAspectCrop(
             {
                 unit: "%",
-                width: 90,
+                width: 100,
             },
             aspect,
             mediaWidth,
@@ -145,7 +145,9 @@ export default function SharePage() {
                 );
             }
 
-            router.push(APP_PATHS.HOME.href);
+            router.push(
+                APP_PATHS.PHOTO((await createPhotoResponse.json()).id).href
+            );
         } catch (err: any) {
             console.error("Sharing failed:", err);
             setError(
@@ -201,7 +203,7 @@ export default function SharePage() {
                 {!!imgSrc && (
                     <div className="grid w-full gap-1.5">
                         <Label htmlFor="caption">Caption (Optional)</Label>
-                        <Textarea
+                        <Input
                             placeholder="Add a caption..."
                             id="caption"
                             value={caption}

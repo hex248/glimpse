@@ -13,7 +13,7 @@ interface PhotoFeedProps {
 
 export default function PhotoFeed({ initialPhotos }: PhotoFeedProps) {
     return (
-        <div className="flex flex-row gap-4">
+        <div className="flex flex-row flex-wrap gap-4 justify-center">
             {initialPhotos.length === 0 && (
                 <p className="text-muted-foreground">
                     No photos yet. Be the first to share!
@@ -23,6 +23,7 @@ export default function PhotoFeed({ initialPhotos }: PhotoFeedProps) {
             {initialPhotos.map((photo) => (
                 <FeedPhoto key={photo.id} photo={photo} />
             ))}
+            <div className="w-full h-8 bg-background" aria-hidden="true"></div>
         </div>
     );
 }

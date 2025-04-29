@@ -16,7 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { ProfileColorText } from "./ui/profile-color-text";
-import { LogOut, Settings2 } from "lucide-react";
+import { LogOut, Settings2, UserRound } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import SharePhotoButton from "./share-photo-button";
 
 export default function Header() {
     const { data: session, status } = useSession();
@@ -56,13 +58,21 @@ export default function Header() {
                                             )}
                                         >
                                             {session.user.image && (
-                                                <Image
-                                                    src={session.user.image}
-                                                    alt="Profile picture"
-                                                    width={28}
-                                                    height={28}
-                                                    className="rounded-full"
-                                                />
+                                                <Avatar className="h-8 w-8 rounded-full">
+                                                    <AvatarImage
+                                                        src={
+                                                            session.user
+                                                                .image ??
+                                                            undefined
+                                                        }
+                                                        alt={`${session.user.username}'s avatar`}
+                                                    />
+                                                    <AvatarFallback className="text-xl">
+                                                        {session.user.username
+                                                            ?.charAt(0)
+                                                            .toUpperCase()}
+                                                    </AvatarFallback>
+                                                </Avatar>
                                             )}
                                             <span className="text-sm font-medium text-foreground">
                                                 {(session.user as any)
@@ -78,6 +88,22 @@ export default function Header() {
                                             className="flex flex-col gap-1 items-start"
                                             align="end"
                                         >
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    router.push(
+                                                        APP_PATHS.PROFILE(
+                                                            session.user
+                                                                .username
+                                                        ).href
+                                                    )
+                                                }
+                                            >
+                                                <UserRound
+                                                    size={25}
+                                                    className="text-foreground"
+                                                />
+                                                Profile
+                                            </DropdownMenuItem>
                                             <DropdownMenuItem
                                                 onClick={() =>
                                                     router.push(

@@ -10,7 +10,7 @@ export interface ProfileColorButtonProps extends ButtonProps {
 const ProfileColorButton = React.forwardRef<
     HTMLButtonElement,
     ProfileColorButtonProps
->(({ className, profileColor, children, style, variant, ...props }, ref) => {
+>(({ profileColor, children, style, variant, ...props }, ref) => {
     const color = profileColor || "#888888";
     const contrastColor = getContrastColor(color);
     let dynamicStyles: React.CSSProperties = { ...style };
@@ -45,13 +45,7 @@ const ProfileColorButton = React.forwardRef<
     }
 
     return (
-        <Button
-            ref={ref}
-            variant={variant}
-            style={dynamicStyles}
-            className={cn(className)}
-            {...props}
-        >
+        <Button ref={ref} variant={variant} style={dynamicStyles} {...props}>
             {children}
         </Button>
     );

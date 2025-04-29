@@ -5,6 +5,10 @@ export const APP_PATHS = {
     CREATE_PROFILE: { href: "/create-profile" },
     SETTINGS: { href: "/settings" },
     SHARE: { href: "/share" },
-    PROFILE: (username: string) => `/profile/${username}`,
-    PHOTO: (photoId: string) => `/photo/${photoId}`,
+    PROFILE: (username: string) => {
+        return { href: `/profile/${username}` };
+    },
+    PHOTO: (photoId: string) => {
+        return { href: `/photo/${photoId}` };
+    },
 };
