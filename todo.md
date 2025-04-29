@@ -4,3 +4,5 @@
 -   friends list
 -   feed should only show friends' photos
 -   user search
+-   delete post
+-   edit caption
