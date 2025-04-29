@@ -79,9 +79,7 @@ export default async function PhotoPage({
                 {photo.caption && <p className="text-xl">{photo.caption}</p>}
 
                 <p className="text-sm text-muted-foreground">
-                    {new Date(photo.createdAt)
-                        .toLocaleTimeString()
-                        .substring(0, 5)}
+                    {new Date(photo.createdAt).toLocaleTimeString()}
                     <br />
                     {new Date(photo.createdAt).toLocaleDateString()}
                 </p>
