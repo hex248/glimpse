@@ -10,20 +10,7 @@ export default async function Home() {
             createdAt: "desc",
         },
         include: {
-            user: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                    emailVerified: true,
-                    image: true,
-                    username: true,
-                    color: true,
-                    bio: true,
-                    createdAt: true,
-                    updatedAt: true,
-                },
-            },
+            user: true,
         },
     });
 

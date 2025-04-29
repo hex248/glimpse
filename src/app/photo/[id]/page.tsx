@@ -18,14 +18,7 @@ export default async function PhotoPage({
             id: photoId,
         },
         include: {
-            user: {
-                select: {
-                    id: true,
-                    username: true,
-                    image: true,
-                    color: true,
-                },
-            },
+            user: true,
         },
     });
 
