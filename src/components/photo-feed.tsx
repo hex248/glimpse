@@ -7,7 +7,7 @@ type PhotoWithUser = Prisma.PhotoGetPayload<{
     include: { user: true };
 }>;
 
-interface PhotoFeedProps {
+export interface PhotoFeedProps {
     initialPhotos: PhotoWithUser[];
 }
 
