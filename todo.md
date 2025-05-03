@@ -6,8 +6,6 @@
 -   user search
 -   delete post
 -   edit caption
--   correct time (uses UTC but we need locale time)
--   edit profile immediately after sign up
 -   comments
 -   notifications (all individually toggle-able):
     -   friend posted

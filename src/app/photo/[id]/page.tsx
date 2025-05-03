@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfileColorText } from "@/components/ui/profile-color-text";
 import { APP_PATHS } from "@/lib/APP_PATHS";
+import PhotoDate from "@/components/photo-date";
 
 export default async function PhotoPage({
     params,
@@ -71,11 +72,7 @@ export default async function PhotoPage({
 
                 {photo.caption && <p className="text-xl">{photo.caption}</p>}
 
-                <p className="text-sm text-muted-foreground">
-                    {new Date(photo.createdAt).toLocaleTimeString()}
-                    <br />
-                    {new Date(photo.createdAt).toLocaleDateString()}
-                </p>
+                <PhotoDate date={photo.createdAt.toUTCString()} />
             </div>
         </div>
     );
