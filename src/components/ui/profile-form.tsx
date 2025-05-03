@@ -41,12 +41,12 @@ export default function ProfileForm({
     const { data: session, status, update } = useSession();
     const router = useRouter();
 
-    const [editing, setEditing] = useState(!startReadOnly);
-
     const [username, setUsername] = useState("");
     const [name, setName] = useState("");
     const [bio, setBio] = useState("");
     const [color, setColor] = useState(defaultColor);
+
+    const [loading, setLoading] = useState(false);
 
     const form = useForm<z.infer<typeof profileSchema>>({
         resolver: zodResolver(profileSchema),
@@ -57,6 +57,10 @@ export default function ProfileForm({
             color: defaultColor,
         },
     });
+
+    useEffect(() => {
+        setLoading(form.formState.isSubmitting);
+    }, [form.formState.isSubmitting]);
 
     const handleSaveChanges = async (values: z.infer<typeof profileSchema>) => {
         const validation = profileSchema.safeParse(values);
@@ -91,21 +95,12 @@ export default function ProfileForm({
                 }
             } else {
                 await update();
-                setEditing(false);
-                setParentEditing?.(false);
                 if (redirectHome) router.push(APP_PATHS.HOME.href);
             }
         } catch (err) {
             console.error(err);
             console.error("An unexpected error occurred.");
         }
-    };
-
-    const handleEditToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        const newState = !editing;
-        setEditing(newState);
-        setParentEditing?.(newState);
     };
 
     useEffect(() => {
@@ -161,14 +156,9 @@ export default function ProfileForm({
                                         />
                                     </FormControl>
                                     <FormMessage />
-                                    {editing && (
-                                        <FormDescription>
-                                            This is your public display name.
-                                        </FormDescription>
-                                    )}
                                 </FormItem>
                             )}
-                            disabled={!editing}
+                            disabled={loading}
                         />
                     )}
                     {fields.includes("name") && (
@@ -185,14 +175,9 @@ export default function ProfileForm({
                                         />
                                     </FormControl>
                                     <FormMessage />
-                                    {editing && (
-                                        <FormDescription>
-                                            Your real name.
-                                        </FormDescription>
-                                    )}
                                 </FormItem>
                             )}
-                            disabled={!editing}
+                            disabled={loading}
                         />
                     )}
                     {fields.includes("bio") && (
@@ -209,15 +194,9 @@ export default function ProfileForm({
                                         />
                                     </FormControl>
                                     <FormMessage />
-                                    {editing && (
-                                        <FormDescription>
-                                            Some additional information about
-                                            you.
-                                        </FormDescription>
-                                    )}
                                 </FormItem>
                             )}
-                            disabled={!editing}
+                            disabled={loading}
                         />
                     )}
                     {fields.includes("color") && (
@@ -245,46 +224,40 @@ export default function ProfileForm({
                                                         setColor(_color);
                                                         field.onChange(_color);
                                                     }}
-                                                    disabled={!editing}
+                                                    disabled={loading}
                                                 />
                                             </div>
                                             <AnimatePresence>
-                                                {editing && (
-                                                    <motion.div
-                                                        initial={{
-                                                            height: 0,
-                                                            opacity: 0,
-                                                        }}
-                                                        animate={{
-                                                            height: "auto",
-                                                            opacity: 1,
-                                                        }}
-                                                        exit={{
-                                                            height: 0,
-                                                            opacity: 0,
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.3,
-                                                            ease: "easeInOut",
-                                                        }}
-                                                        className="overflow-hidden w-fit outline-none"
-                                                    >
-                                                        <HexColorPicker
-                                                            color={color}
-                                                            onChange={(
+                                                <motion.div
+                                                    initial={{
+                                                        height: 0,
+                                                        opacity: 0,
+                                                    }}
+                                                    animate={{
+                                                        height: "auto",
+                                                        opacity: 1,
+                                                    }}
+                                                    exit={{
+                                                        height: 0,
+                                                        opacity: 0,
+                                                    }}
+                                                    transition={{
+                                                        duration: 0.3,
+                                                        ease: "easeInOut",
+                                                    }}
+                                                    className="overflow-hidden w-fit outline-none"
+                                                >
+                                                    <HexColorPicker
+                                                        color={color}
+                                                        onChange={(_color) => {
+                                                            setColor(_color);
+                                                            field.onChange(
                                                                 _color
-                                                            ) => {
-                                                                setColor(
-                                                                    _color
-                                                                );
-                                                                field.onChange(
-                                                                    _color
-                                                                );
-                                                            }}
-                                                            className="rounded-none"
-                                                        />
-                                                    </motion.div>
-                                                )}
+                                                            );
+                                                        }}
+                                                        className="rounded-none"
+                                                    />
+                                                </motion.div>
                                             </AnimatePresence>
                                         </div>
                                     </FormControl>
@@ -295,26 +268,16 @@ export default function ProfileForm({
                     )}
 
                     <div className="mt-5">
-                        {editing ? (
-                            <ProfileColorButton
-                                variant="profileSolid"
-                                type="submit"
-                                disabled={form.formState.isSubmitting}
-                                profileColor={color}
-                            >
-                                {form.formState.isSubmitting
-                                    ? "Saving..."
-                                    : submitButtonText || "Save Changes"}
-                            </ProfileColorButton>
-                        ) : (
-                            <ProfileColorButton
-                                variant="profileSolid"
-                                onClick={handleEditToggle}
-                                profileColor={color}
-                            >
-                                Edit Profile
-                            </ProfileColorButton>
-                        )}
+                        <ProfileColorButton
+                            variant="profileSolid"
+                            type="submit"
+                            disabled={loading}
+                            profileColor={color}
+                        >
+                            {loading
+                                ? "Saving..."
+                                : submitButtonText || "Save Changes"}
+                        </ProfileColorButton>
                     </div>
                 </form>
             </Form>

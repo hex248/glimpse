@@ -5,7 +5,6 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 
 export default function ProfilePage() {
-    const [editing, setEditing] = useState(false);
     return (
         <div className="w-full h-full flex items-center justify-center">
             <motion.div
@@ -14,10 +13,10 @@ export default function ProfilePage() {
                 className="flex flex-col items-center justify-center border rounded-xl p-6 shadow-md bg-popover w-[95%] max-w-lg gap-6 overflow-hidden"
             >
                 <motion.h1 layout="position" className="text-xl">
-                    {editing ? "Edit Profile" : "Settings"}
+                    Edit Profile
                 </motion.h1>
 
-                <ProfileForm setEditing={setEditing} startReadOnly={!editing} />
+                <ProfileForm startReadOnly={false} />
             </motion.div>
         </div>
     );

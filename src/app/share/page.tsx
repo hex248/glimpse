@@ -75,7 +75,7 @@ export default function SharePage() {
 
     function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
         const { width, height } = e.currentTarget;
-        imgRef.current = e.currentTarget; // Assign ref
+        imgRef.current = e.currentTarget;
         setCrop(centerAspectCrop(width, height, aspect));
     }
 
