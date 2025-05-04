@@ -8,17 +8,22 @@ import { useSession } from "next-auth/react";
 export default function HomeComponent({ initialPhotos }: PhotoFeedProps) {
     const { data: session, status } = useSession();
 
-    if (status !== "authenticated") {
+    if (status === "unauthenticated") {
+        return <GoogleSignIn />;
+    } else if (status === "loading") {
         return (
-            <GoogleSignIn />
-        )
-    
+            <div className="flex items-center justify-center h-full">
+                Loading...
+            </div>
+        );
+    } else if (status === "authenticated") {
+        return (
+            <div className="flex flex-col items-center justify-start h-full gap-4">
+                <PhotoFeed initialPhotos={initialPhotos} />
+                <div className="absolute fixed bottom-6 right-6 w-[60px] h-[60px]">
+                    <SharePhotoButton />
+                </div>
+            </div>
+        );
     }
-
-    return (<div className="flex flex-col items-center justify-start h-full gap-4">
-        <PhotoFeed initialPhotos={initialPhotos} />
-        <div className="absolute fixed bottom-6 right-6 w-[60px] h-[60px]">
-            <SharePhotoButton />
-        </div>
-    </div>);
 }
