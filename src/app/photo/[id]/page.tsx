@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfileColorText } from "@/components/ui/profile-color-text";
 import { APP_PATHS } from "@/lib/APP_PATHS";
 import PhotoDate from "@/components/photo-date";
+import CommentsSection from "@/components/comments-section";
 
 export default async function PhotoPage({
     params,
@@ -20,6 +21,14 @@ export default async function PhotoPage({
         },
         include: {
             user: true,
+            comments: {
+                include: {
+                    user: true,
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+            },
         },
     });
 
@@ -72,7 +81,9 @@ export default async function PhotoPage({
 
                 {photo.caption && <p className="text-xl">{photo.caption}</p>}
 
-                <PhotoDate date={photo.createdAt.toUTCString()} />
+                <PhotoDate date={photo.createdAt.toUTCString()} showSeconds />
+
+                <CommentsSection photoId={photo.id} comments={photo.comments} />
             </div>
         </div>
     );

@@ -6,7 +6,6 @@
 -   user search
 -   delete post
 -   edit caption
--   comments
 -   notifications (all individually toggle-able):
     -   friend posted
     -   comment
