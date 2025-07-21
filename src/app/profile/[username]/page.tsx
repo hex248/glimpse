@@ -36,7 +36,7 @@ export default async function ProfilePage({
 
     return (
         <div className="container mx-auto max-w-4xl h-full">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 mb-6 border-b border-muted pb-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6 border-b border-muted pb-6">
                 <Avatar
                     className="h-24 w-24 sm:h-32 sm:w-32 border-6 sm:border-8"
                     style={{ borderColor: profileColor }}

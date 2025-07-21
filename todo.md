@@ -5,6 +5,7 @@
 -   feed should only show friends' photos
 -   user search
 -   delete post
+-   delete comment
 -   edit caption
 -   notifications (all individually toggle-able):
     -   friend posted
