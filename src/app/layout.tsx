@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Rubik } from "next/font/google";
 import AuthProvider from "@/components/AuthProvider";
 import Header from "@/components/Header";
+import BottomNav from "@/components/BottomNav";
 
 const rubik = Rubik({
     subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
                     <div className="flex flex-col items-center justify-center w-full min-h-[calc(100vh-var(--header-height))] pb-16 p-4 overflow-scroll">
                         {children}
                     </div>
+                    <BottomNav />
                 </AuthProvider>
             </body>
         </html>
