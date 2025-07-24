@@ -2,9 +2,9 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { APP_PATHS } from "@/lib/APP_PATHS";
 import { defaultColor } from "@/lib/utils";
+import ProfileHeader from "@/components/ProfileHeader";
 
 export default async function ProfilePage({
     params,
@@ -36,33 +36,7 @@ export default async function ProfilePage({
 
     return (
         <div className="container mx-auto max-w-4xl h-full">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6 border-b border-muted pb-6">
-                <Avatar
-                    className="h-24 w-24 sm:h-32 sm:w-32 border-6 sm:border-8"
-                    style={{ borderColor: profileColor }}
-                >
-                    <AvatarImage
-                        src={user.image ?? undefined}
-                        alt={`${user.username}'s avatar`}
-                    />
-                    <AvatarFallback className="text-7xl">
-                        {user.username?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col items-center sm:items-start gap-0 flex-grow">
-                    <h1 className="text-3xl font-bold">{user.username}</h1>
-                    {user.name && (
-                        <p className="text-lg text-muted-foreground">
-                            {user.name}
-                        </p>
-                    )}
-                    {user.bio && (
-                        <p className="text-sm text-center sm:text-left">
-                            {user.bio}
-                        </p>
-                    )}
-                </div>
-            </div>
+            <ProfileHeader user={user} profileColor={profileColor} />
             {user.photos.length === 0 ? (
                 <p className="text-center text-muted-foreground">
                     {user.username} hasn't shared any photos yet.
