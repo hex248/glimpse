@@ -5,6 +5,7 @@ export const APP_PATHS = {
     CREATE_PROFILE: { href: "/create-profile" },
     SETTINGS: { href: "/settings" },
     SHARE: { href: "/share" },
+    SEARCH: { href: "/search" },
     PROFILE: (username: string) => {
         return { href: `/profile/${username}` };
     },
