@@ -52,8 +52,8 @@ export default function BottomNav() {
     ];
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-gray-200 p-0 pb-safe z-50 h-[var(--nav-height)]">
-            <div className="flex justify-around mx-auto w-full">
+        <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-gray-200 p-0 z-50 h-20 h-[calc(var(--nav-height)+15px))] lg:h-[var(--nav-height)]">
+            <div className="flex align-start lg:align-center justify-around mx-auto w-full h-full">
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     return (
@@ -62,7 +62,7 @@ export default function BottomNav() {
                             variant="ghost"
                             size="lg"
                             onClick={() => router.push(item.href)}
-                            className="flex flex-1 items-center justify-center h-auto py-4 px-6 rounded-none"
+                            className="flex flex-1 items-start justify-center h-auto py-4 lg:py-4 px-6 rounded-none"
                             style={{
                                 color: item.isActive ? color : undefined,
                             }}
