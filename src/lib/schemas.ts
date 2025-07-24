@@ -109,3 +109,13 @@ export const PhotoCreateAPISchema = z.object({
 });
 
 export type PhotoCreateAPIInput = z.infer<typeof PhotoCreateAPISchema>;
+
+export const UserSearchSchema = z.object({
+    q: z
+        .string({ required_error: "Search query is required" })
+        .min(1, "Search query cannot be empty")
+        .max(50, "Search query cannot exceed 50 characters")
+        .trim(),
+});
+
+export type UserSearchInput = z.infer<typeof UserSearchSchema>;

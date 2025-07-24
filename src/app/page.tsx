@@ -13,9 +13,5 @@ export default async function Home() {
         },
     });
 
-        
-
-    return (
-        <HomeComponent initialPhotos={photos} />
-    );
+    return <HomeComponent initialPhotos={photos} />;
 }

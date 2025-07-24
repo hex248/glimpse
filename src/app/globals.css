@@ -8,6 +8,7 @@
 
 :root {
     --header-height: 50px;
+    --nav-height: 56px;
 
     --destructive: oklch(0.577 0.245 27.325);
     --radius: 0.625rem;

@@ -32,7 +32,7 @@ export default function RootLayout({
             <body className={`${rubik.variable} antialiased font-sans`}>
                 <AuthProvider>
                     <Header />
-                    <div className="flex flex-col items-center justify-center w-full min-h-[calc(100vh-var(--header-height))] pb-16 p-4 overflow-scroll">
+                    <div className="flex flex-col items-center justify-start w-full min-h-[calc(100vh-var(--header-height)-var(--nav-height))] p-4 overflow-scroll">
                         {children}
                     </div>
                     <BottomNav />
