@@ -159,9 +159,7 @@ export default function SharePage() {
     };
 
     return (
-        <div className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4 gap-6">
-            <h1 className="text-3xl font-bold">Share a Photo</h1>
-
+        <div className="w-full h-full flex flex-col items-center justify-center">
             <form
                 onSubmit={handleShare}
                 className="w-full max-w-md p-8 border rounded-lg bg-card text-card-foreground flex flex-col gap-6"
