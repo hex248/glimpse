@@ -1,17 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import {
     subscribeToPushNotifications,
     unsubscribeFromPushNotifications,
     getPushNotificationPermission,
 } from "@/lib/pushNotificationsClient";
+import { getContrastColor } from "@/lib/colorUtils";
 
 export default function PushNotificationToggle() {
+    const { data: session } = useSession();
     const [isEnabled, setIsEnabled] = useState(false);
     const [permission, setPermission] =
         useState<NotificationPermission>("default");
     const [isLoading, setIsLoading] = useState(false);
+
+    const userColor = (session?.user as any)?.color || "#888888";
+    const contrastColor = getContrastColor(userColor);
 
     useEffect(() => {
         checkStatus();
@@ -63,18 +69,25 @@ export default function PushNotificationToggle() {
                 <button
                     onClick={handleToggle}
                     disabled={isLoading || permission === "denied"}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                        isEnabled ? "bg-indigo-600" : "bg-gray-200"
-                    } ${isLoading ? "opacity-50 cursor-not-allowed" : ""} ${
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        isLoading ? "opacity-50 cursor-not-allowed" : ""
+                    } ${
                         permission === "denied"
                             ? "opacity-50 cursor-not-allowed"
                             : ""
                     }`}
+                    style={{
+                        backgroundColor: isEnabled ? userColor : "#e5e7eb",
+                        border: isEnabled ? `1px solid ${contrastColor === "#000000" ? "#000000" : userColor}` : "none",
+                    }}
                 >
                     <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        className={`inline-block h-4 w-4 transform rounded-full transition-transform ${
                             isEnabled ? "translate-x-6" : "translate-x-1"
                         }`}
+                        style={{
+                            backgroundColor: isEnabled ? contrastColor : "#ffffff",
+                        }}
                     />
                 </button>
             </div>
