@@ -4,6 +4,7 @@ import { Rubik } from "next/font/google";
 import AuthProvider from "@/components/AuthProvider";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
+import PushNotificationManager from "@/components/PushNotificationManager";
 
 const rubik = Rubik({
     subsets: ["latin"],
@@ -31,6 +32,7 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body className={`${rubik.variable} antialiased font-sans`}>
                 <AuthProvider>
+                    <PushNotificationManager />
                     <Header />
                     <div className="flex flex-col items-center justify-start w-full min-h-[calc(100vh-var(--header-height)-var(--nav-height))] p-4 overflow-scroll">
                         {children}
