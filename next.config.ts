@@ -25,6 +25,8 @@ const nextConfig: NextConfig = {
             },
         ],
     },
+
+    devIndicators: false,
 };
 
 const withPWA = require("next-pwa")({
