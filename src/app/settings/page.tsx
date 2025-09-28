@@ -21,7 +21,7 @@ export default function ProfilePage() {
                     <ProfileForm startReadOnly={false} />
                 </div>
 
-                <div className="border-t pt-6">
+                <div className="pt-3">
                     <h2 className="text-lg font-medium mb-4">Notifications</h2>
                     <PushNotificationToggle />
                 </div>

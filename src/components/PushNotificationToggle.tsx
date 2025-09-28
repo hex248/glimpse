@@ -78,7 +78,13 @@ export default function PushNotificationToggle() {
                     }`}
                     style={{
                         backgroundColor: isEnabled ? userColor : "#e5e7eb",
-                        border: isEnabled ? `1px solid ${contrastColor === "#000000" ? "#000000" : userColor}` : "none",
+                        border: isEnabled
+                            ? `1px solid ${
+                                  contrastColor === "#000000"
+                                      ? "#000000"
+                                      : userColor
+                              }`
+                            : "none",
                     }}
                 >
                     <span
@@ -86,7 +92,9 @@ export default function PushNotificationToggle() {
                             isEnabled ? "translate-x-6" : "translate-x-1"
                         }`}
                         style={{
-                            backgroundColor: isEnabled ? contrastColor : "#ffffff",
+                            backgroundColor: isEnabled
+                                ? contrastColor
+                                : "#ffffff",
                         }}
                     />
                 </button>
