@@ -267,7 +267,7 @@ export default function ProfileForm({
                         />
                     )}
 
-                    <div className="mt-5">
+                    <div className="">
                         <ProfileColorButton
                             variant="profileSolid"
                             type="submit"
