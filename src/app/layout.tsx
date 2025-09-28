@@ -34,7 +34,7 @@ export default function RootLayout({
                 <AuthProvider>
                     <PushNotificationManager />
                     <Header />
-                    <div className="flex flex-col items-center justify-start w-full min-h-[calc(100vh-var(--header-height)-var(--nav-height))] px-4 pt-4 pb-[calc(var(--nav-height)+env(safe-area-inset-bottom,0px))] overflow-auto">
+                    <div className="flex flex-col items-center justify-start w-full min-h-[calc(100vh-var(--header-height)-var(--nav-height))] p-4 overflow-scroll">
                         {children}
                     </div>
                     <BottomNav />
