@@ -1,126 +1,126 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique // email is optional for OAuth
-    emailVerified DateTime?
-    image         String? // provided by NextAuth (OAuth profile picture)
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique // email is optional for OAuth
+  emailVerified DateTime?
+  image         String? // provided by NextAuth (OAuth profile picture)
 
-    username String? @unique
-    color    String? @default("#aa6ef1")
-    bio      String? @db.Text
+  username String? @unique
+  color    String? @default("#aa6ef1")
+  bio      String? @db.Text
 
-    accounts Account[]
-    sessions Session[]
+  accounts Account[]
+  sessions Session[]
 
-    photos   Photo[]
-    comments Comment[]
+  photos   Photo[]
+  comments Comment[]
 
-    notifications     Notification[]
-    pushSubscriptions PushSubscription[]
+  notifications     Notification[]
+  pushSubscriptions PushSubscription[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? @db.Text
-    session_state     String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
-    @@index([userId])
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([userId])
+  @@index([userId])
 }
 
 model Photo {
-    id        String   @id @default(cuid())
-    imageUrl  String
-    caption   String?  @db.Text
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  imageUrl  String
+  caption   String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    userId String
-    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    comments      Comment[]
-    notifications Notification[]
+  comments      Comment[]
+  notifications Notification[]
 
-    @@index([userId])
+  @@index([userId])
 }
 
 model Comment {
-    id        String   @id @default(cuid())
-    content   String   @db.Text
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    photoId String
-    photo   Photo  @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  photoId String
+  photo   Photo  @relation(fields: [photoId], references: [id], onDelete: Cascade)
 
-    userId String
-    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([photoId])
-    @@index([userId])
+  @@index([photoId])
+  @@index([userId])
 }
 
 model Notification {
-    id        String   @id @default(cuid())
-    userId    String
-    type      String // 'photo_post' | 'comment' | 'friend request'
-    message   String
-    read      Boolean  @default(false)
-    createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  type      String // 'photo_post' | 'comment' | 'friend request'
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
 
-    photoId String?
-    photo   Photo?  @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  photoId String?
+  photo   Photo?  @relation(fields: [photoId], references: [id], onDelete: Cascade)
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([userId])
-    @@index([read])
-    @@map("notifications")
+  @@index([userId])
+  @@index([read])
+  @@map("Notification")
 }
 
 model PushSubscription {
-    id        String   @id @default(cuid())
-    userId    String
-    endpoint  String   @unique
-    p256dh    String
-    auth      String
-    createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([userId])
-    @@map("push_subscriptions")
+  @@index([userId])
+  @@map("PushSubscription")
 }

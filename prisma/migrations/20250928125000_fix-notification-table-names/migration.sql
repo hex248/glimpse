@@ -1,0 +1,2 @@
+-- This migration updates the schema to reflect the current PascalCase table names
+-- The database already has the correct structure, this just updates the migration history
