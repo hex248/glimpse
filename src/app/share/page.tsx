@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent, type FormEvent } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ import ReactCrop, {
 import "react-image-crop/dist/ReactCrop.css";
 import { getCroppedImageBlob } from "@/lib/cropUtils";
 import { APP_PATHS } from "@/lib/APP_PATHS";
+import { ProfileColorButton } from "@/components/ui/profile-color-button";
 
 function centerAspectCrop(
     mediaWidth: number,
@@ -38,6 +40,9 @@ function centerAspectCrop(
 
 export default function SharePage() {
     const router = useRouter();
+
+    const { data: session } = useSession();
+
     const [imgSrc, setImgSrc] = useState<string | null>(null);
     const imgRef = useRef<HTMLImageElement | null>(null);
     const [crop, setCrop] = useState<Crop>();
@@ -214,9 +219,15 @@ export default function SharePage() {
 
                 {error && <p className="text-sm text-destructive">{error}</p>}
 
-                <Button type="submit" disabled={isProcessing || !completedCrop}>
+                <ProfileColorButton
+                    variant="profileSolid"
+                    type="submit"
+                    disabled={isProcessing || !completedCrop}
+                    className=""
+                    profileColor={session?.user.color}
+                >
                     {isProcessing ? "Sharing..." : "Share"}
-                </Button>
+                </ProfileColorButton>
             </form>
         </div>
     );
