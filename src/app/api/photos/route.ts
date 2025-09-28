@@ -65,9 +65,10 @@ export async function POST(request: Request) {
             select: { id: true },
         });
 
+        const showCaption = false;
         const notificationMessage = `${
-            newPhoto.user.name || newPhoto.user.username
-        } posted a new photo${caption ? `: "${caption}"` : ""}`;
+            newPhoto.user.username || newPhoto.user.name || "Someone"
+        } posted a new photo${showCaption && caption ? `: "${caption}"` : ""}`;
 
         // create notification records
         const notificationPromises = users.map((user) =>
