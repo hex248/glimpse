@@ -40,7 +40,6 @@ self.addEventListener("notificationclick", function (event) {
 
     const action = event.action;
     const data = event.notification.data || {};
-    const type = data.type;
 
     if (action === "dismiss") {
         return;
@@ -56,12 +55,6 @@ self.addEventListener("notificationclick", function (event) {
     ) {
         // default
         urlToOpen = data.url || "/";
-    } else if (action === "accept_friend") {
-        // TODO will be redirected to a accept friend specific page once implemented
-        urlToOpen = data.url || "/";
-    } else if (action === "decline_friend") {
-        // TODO will be redirected to a decline friend specific page once implemented
-        return;
     }
 
     event.waitUntil(

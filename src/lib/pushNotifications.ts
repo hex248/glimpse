@@ -21,10 +21,6 @@ export interface PushNotificationPayload {
         url?: string;
         photoId?: string;
         type?: "photo_post" | "comment" | "friend_request";
-        actions?: Array<{
-            action: string;
-            title: string;
-        }>;
     };
 }
 
@@ -89,50 +85,6 @@ export function getVapidPublicKey() {
     return vapidKeys.publicKey;
 }
 
-export function getNotificationActions(
-    type: "photo_post" | "comment" | "friend_request"
-) {
-    const baseActions = [
-        {
-            action: "dismiss",
-            title: "Dismiss",
-        },
-    ];
-
-    switch (type) {
-        case "photo_post":
-            return [
-                {
-                    action: "view_photo",
-                    title: "View Photo",
-                },
-                ...baseActions,
-            ];
-        case "comment":
-            return [
-                {
-                    action: "view_comment",
-                    title: "View Comment",
-                },
-                ...baseActions,
-            ];
-        case "friend_request":
-            return [
-                {
-                    action: "accept_friend",
-                    title: "Accept",
-                },
-                {
-                    action: "decline_friend",
-                    title: "Decline",
-                },
-                ...baseActions,
-            ];
-        default:
-            return baseActions;
-    }
-}
-
 export function createNotificationPayload(
     type: "photo_post" | "comment" | "friend_request",
     title: string,
@@ -151,7 +103,6 @@ export function createNotificationPayload(
         data: {
             ...data,
             type,
-            actions: getNotificationActions(type),
         },
     };
 }
