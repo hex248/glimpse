@@ -42,5 +42,10 @@ export default async function Home() {
         photos = [];
     }
 
-    return <HomeComponent initialPhotos={photos} />;
+    return (
+        <HomeComponent
+            initialPhotos={photos}
+            profileColor={session?.user?.color || "#000000"}
+        />
+    );
 }

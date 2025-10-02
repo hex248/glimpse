@@ -4,7 +4,10 @@ import PhotoFeed, { PhotoFeedProps } from "@/components/photo-feed";
 import GoogleSignIn from "@/components/GoogleSignIn";
 import { useSession } from "next-auth/react";
 
-export default function HomeComponent({ initialPhotos }: PhotoFeedProps) {
+export default function HomeComponent({
+    initialPhotos,
+    profileColor,
+}: PhotoFeedProps) {
     const { data: session, status } = useSession();
 
     if (status === "unauthenticated") {
@@ -20,7 +23,7 @@ export default function HomeComponent({ initialPhotos }: PhotoFeedProps) {
             <div className="flex flex-col items-center justify-start h-full gap-4">
                 <PhotoFeed
                     initialPhotos={initialPhotos}
-                    profileColor={session.user?.color || "#000000"}
+                    profileColor={profileColor}
                 />
             </div>
         );
