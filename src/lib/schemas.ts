@@ -119,3 +119,9 @@ export const UserSearchSchema = z.object({
 });
 
 export type UserSearchInput = z.infer<typeof UserSearchSchema>;
+
+export const SendFriendRequestSchema = z.object({
+    requestedId: z.string({ required_error: "Requested user ID is required" }),
+});
+
+export type SendFriendRequestInput = z.infer<typeof SendFriendRequestSchema>;
