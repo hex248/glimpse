@@ -76,6 +76,7 @@ model Photo {
   id        String   @id @default(cuid())
   imageUrl  String
   caption   String?  @db.Text
+  isPrivate Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
