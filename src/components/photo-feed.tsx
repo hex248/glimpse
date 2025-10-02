@@ -21,7 +21,7 @@ export default function PhotoFeed({
     profileColor,
 }: PhotoFeedProps) {
     return (
-        <div className="flex flex-row flex-wrap justify-center">
+        <div className="flex flex-row flex-wrap justify-center gap-2">
             {initialPhotos.length === 0 && (
                 <div className="flex flex-col items-center gap-32">
                     <SearchBar />
