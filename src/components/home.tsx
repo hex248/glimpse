@@ -18,7 +18,10 @@ export default function HomeComponent({ initialPhotos }: PhotoFeedProps) {
     } else if (status === "authenticated") {
         return (
             <div className="flex flex-col items-center justify-start h-full gap-4">
-                <PhotoFeed initialPhotos={initialPhotos} />
+                <PhotoFeed
+                    initialPhotos={initialPhotos}
+                    profileColor={session.user?.color || "#000000"}
+                />
             </div>
         );
     }

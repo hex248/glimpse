@@ -5,6 +5,7 @@ import FeedPhoto from "@/components/feed-photo";
 import Link from "next/link";
 import { APP_PATHS } from "@/lib/APP_PATHS";
 import { Search } from "lucide-react";
+import SearchBar from "./search-bar";
 
 type PhotoWithUser = Prisma.PhotoGetPayload<{
     include: { user: true };
@@ -12,25 +13,25 @@ type PhotoWithUser = Prisma.PhotoGetPayload<{
 
 export interface PhotoFeedProps {
     initialPhotos: PhotoWithUser[];
+    profileColor: string;
 }
 
-export default function PhotoFeed({ initialPhotos }: PhotoFeedProps) {
+export default function PhotoFeed({
+    initialPhotos,
+    profileColor,
+}: PhotoFeedProps) {
     return (
         <div className="flex flex-row flex-wrap justify-center">
             {initialPhotos.length === 0 && (
-                <div className="flex flex-col items-center gap-4 text-lg">
-                    <p className="text-muted-foreground text-center">
-                        Send your friends a request to see their posts
-                    </p>
-                    <Link
-                        href={APP_PATHS.SEARCH.href}
-                        className="text-primary text-xl"
+                <div className="flex flex-col items-center gap-32">
+                    <SearchBar />
+                    <p
+                        className="text-muted-foreground text-center text-3xl"
+                        style={{ color: profileColor }}
                     >
-                        <span className="flex items-center gap-2 no-select">
-                            Search users
-                            <Search size={20} className="size-8" />
-                        </span>
-                    </Link>
+                        Send a friend request to see someone's photos in your
+                        feed!
+                    </p>
                 </div>
             )}
 
