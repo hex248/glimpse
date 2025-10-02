@@ -3,6 +3,10 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/db";
 import { SendFriendRequestSchema } from "@/lib/schemas";
+import {
+    sendPushNotificationToUser,
+    createNotificationPayload,
+} from "@/lib/pushNotifications";
 
 // send friend request
 export async function POST(request: Request) {
@@ -106,6 +110,19 @@ export async function POST(request: Request) {
                 message: `You have a friend request from ${requesterName}`,
             },
         });
+
+        // send push notification
+        try {
+            const payload = createNotificationPayload(
+                "friend_request",
+                "New Friend Request",
+                `You have a friend request from ${requesterName}`,
+                { url: `/profile/${requester?.username}` }
+            );
+            await sendPushNotificationToUser(requestedId, payload);
+        } catch (pushError) {
+            console.error("failed to send push notification:", pushError);
+        }
 
         return NextResponse.json(friendRequest, { status: 201 });
     } catch (error) {
