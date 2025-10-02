@@ -124,4 +124,14 @@ export const SendFriendRequestSchema = z.object({
     requestedId: z.string({ required_error: "Requested user ID is required" }),
 });
 
+export const RespondFriendRequestSchema = z.object({
+    action: z.enum(["accept", "deny"], {
+        required_error: "Action is required",
+    }),
+});
+
 export type SendFriendRequestInput = z.infer<typeof SendFriendRequestSchema>;
+
+export type RespondFriendRequestInput = z.infer<
+    typeof RespondFriendRequestSchema
+>;
