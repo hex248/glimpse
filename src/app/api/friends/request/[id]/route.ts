@@ -3,6 +3,10 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/db";
 import { RespondFriendRequestSchema } from "@/lib/schemas";
+import {
+    sendPushNotificationToUser,
+    createNotificationPayload,
+} from "@/lib/pushNotifications";
 
 // accept/decline friend request
 export async function PUT(
@@ -90,6 +94,19 @@ export async function PUT(
                     message: `${requestedName} accepted your friend request`,
                 },
             });
+
+            // send push notification
+            try {
+                const payload = createNotificationPayload(
+                    "friend_request",
+                    "Friend Request Accepted",
+                    `${requestedName} accepted your friend request`,
+                    { url: `/profile/${requestedUser?.username}` }
+                );
+                await sendPushNotificationToUser(requesterId, payload);
+            } catch (pushError) {
+                console.error("failed to send push notification:", pushError);
+            }
         }
 
         await prisma.friendRequest.delete({
