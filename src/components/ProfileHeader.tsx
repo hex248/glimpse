@@ -2,8 +2,8 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Ellipsis, Settings2, LogOut } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Bell, Ellipsis, Settings2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { APP_PATHS } from "@/lib/APP_PATHS";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { defaultColor } from "@/lib/utils";
+import { ProfileColorButton } from "./ui/profile-color-button";
 
 interface ProfileHeaderProps {
     user: {
@@ -27,6 +29,18 @@ interface ProfileHeaderProps {
     isFriends?: boolean;
 }
 
+interface FriendRequest {
+    id: string;
+    requester: {
+        id: string;
+        username: string | null;
+        name: string | null;
+        color: string | null;
+        image: string | null;
+    };
+    createdAt: string;
+}
+
 export default function ProfileHeader({
     user,
     profileColor,
@@ -36,11 +50,59 @@ export default function ProfileHeader({
     const router = useRouter();
     const [sending, setSending] = useState(false);
     const [sent, setSent] = useState(false);
+    const [isResponding, setIsResponding] = useState(false);
+    const [requests, setRequests] = useState<FriendRequest[]>([]);
+    const [loadingRequests, setLoadingRequests] = useState(false);
 
     const isOwnProfile =
         status === "authenticated" && session?.user?.username === user.username;
 
     if (!user.username) return null;
+
+    const fetchRequests = async () => {
+        setLoadingRequests(true);
+        try {
+            const response = await fetch("/api/friends/request");
+            if (response.ok) {
+                const data = await response.json();
+                setRequests(data);
+            }
+        } catch (error) {
+            console.error("Error fetching requests:", error);
+        } finally {
+            setLoadingRequests(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isOwnProfile) {
+            fetchRequests();
+        }
+    }, [isOwnProfile]);
+
+    const respondToRequest = async (
+        requestId: string,
+        action: "accept" | "deny"
+    ) => {
+        setIsResponding(true);
+        try {
+            const response = await fetch(`/api/friends/request/${requestId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action }),
+            });
+            if (response.ok) {
+                setRequests((prev) => prev.filter((r) => r.id !== requestId));
+            } else {
+                const error = await response.json();
+                alert(error.error);
+            }
+        } catch (error) {
+            console.error("Error responding to friend request:", error);
+        } finally {
+            setIsResponding(false);
+        }
+    };
 
     const sendRequest = async () => {
         setSending(true);
@@ -67,7 +129,107 @@ export default function ProfileHeader({
     return (
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6 border-b border-muted pb-6 relative">
             {isOwnProfile && (
-                <div className="absolute top-0 right-0">
+                <div className="absolute top-0 right-0 flex items-center gap-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="relative p-2 rounded-full"
+                            >
+                                <Bell size={20} className="size-5" />
+                                {requests.length > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[12px] rounded-full h-4 w-4 flex items-center justify-center">
+                                        {requests.length}
+                                    </span>
+                                )}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-80">
+                            <div className="p-2">
+                                <h3 className="font-medium mb-2">
+                                    Friend Requests
+                                </h3>
+                                {loadingRequests && <p>Loading...</p>}
+                                {!loadingRequests && requests.length === 0 && (
+                                    <p className="text-sm text-muted-foreground">
+                                        No pending friend requests
+                                    </p>
+                                )}
+                                {requests.map((request) => (
+                                    <div
+                                        key={request.id}
+                                        className="flex items-center gap-3 p-2 border-b last:border-b-0"
+                                    >
+                                        <Avatar
+                                            className="h-8 w-8 border-2"
+                                            style={{
+                                                borderColor:
+                                                    request.requester.color ||
+                                                    defaultColor,
+                                            }}
+                                        >
+                                            <AvatarImage
+                                                src={
+                                                    request.requester.image ??
+                                                    undefined
+                                                }
+                                                alt={`${request.requester.username}'s avatar`}
+                                            />
+                                            <AvatarFallback>
+                                                {request.requester.username
+                                                    ?.charAt(0)
+                                                    .toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-1">
+                                            <p className="font-medium text-sm">
+                                                {request.requester.username}
+                                            </p>
+                                            {request.requester.name && (
+                                                <p className="text-xs text-muted-foreground">
+                                                    {request.requester.name}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <ProfileColorButton
+                                                variant="profileSolid"
+                                                profileColor={
+                                                    request.requester.color ||
+                                                    defaultColor
+                                                }
+                                                disabled={isResponding}
+                                                size="sm"
+                                                onClick={() =>
+                                                    respondToRequest(
+                                                        request.id,
+                                                        "accept"
+                                                    )
+                                                }
+                                            >
+                                                Accept
+                                            </ProfileColorButton>
+
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                disabled={isResponding}
+                                                onClick={() =>
+                                                    respondToRequest(
+                                                        request.id,
+                                                        "deny"
+                                                    )
+                                                }
+                                            >
+                                                Deny
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
