@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DENIED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -26,6 +32,11 @@ model User {
 
   notifications     Notification[]
   pushSubscriptions PushSubscription[]
+
+  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+  friendshipsAsUser1     Friendship[]    @relation("FriendshipUser1")
+  friendshipsAsUser2     Friendship[]    @relation("FriendshipUser2")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -123,4 +134,33 @@ model PushSubscription {
 
   @@index([userId])
   @@map("PushSubscription")
+}
+
+model FriendRequest {
+  id          String              @id @default(cuid())
+  requesterId String
+  requester   User                @relation("SentFriendRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  requestedId String
+  requested   User                @relation("ReceivedFriendRequests", fields: [requestedId], references: [id], onDelete: Cascade)
+  status      FriendRequestStatus @default(PENDING)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@unique([requesterId, requestedId])
+  @@index([requesterId])
+  @@index([requestedId])
+  @@index([status])
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  user1Id   String
+  user1     User     @relation("FriendshipUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2Id   String
+  user2     User     @relation("FriendshipUser2", fields: [user2Id], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([user1Id, user2Id])
+  @@index([user1Id])
+  @@index([user2Id])
 }
