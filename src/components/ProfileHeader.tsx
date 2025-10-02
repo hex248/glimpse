@@ -277,8 +277,20 @@ export default function ProfileHeader({
                 </AvatarFallback>
             </Avatar>
 
-            <div className="flex flex-col items-center sm:items-start gap-0 flex-grow">
-                <h1 className="text-3xl font-bold">{user.username}</h1>
+            <div className="flex flex-col items-center sm:items-start justify-start gap-0 flex-grow">
+                <h1 className="text-3xl font-bold flex items-center gap-2">
+                    {user.username}
+                    {isFriends && (
+                        <span
+                            className="px-2.5 py-0.5 text-sm text-white rounded-md no-select"
+                            style={{
+                                backgroundColor: profileColor,
+                            }}
+                        >
+                            Friends
+                        </span>
+                    )}
+                </h1>
                 {user.name && (
                     <p className="text-lg text-muted-foreground">{user.name}</p>
                 )}
