@@ -2,6 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Ellipsis, Settings2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,19 +24,45 @@ interface ProfileHeaderProps {
         color?: string | null;
     };
     profileColor: string;
+    isFriends?: boolean;
 }
 
 export default function ProfileHeader({
     user,
     profileColor,
+    isFriends = false,
 }: ProfileHeaderProps) {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const [sending, setSending] = useState(false);
+    const [sent, setSent] = useState(false);
 
     const isOwnProfile =
         status === "authenticated" && session?.user?.username === user.username;
 
     if (!user.username) return null;
+
+    const sendRequest = async () => {
+        setSending(true);
+        try {
+            const response = await fetch("/api/friends/request", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ requestedId: user.id }),
+            });
+            if (response.ok) {
+                setSent(true);
+            } else {
+                const error = await response.json();
+                alert(error.error);
+            }
+        } catch (error) {
+            console.error("Error sending request:", error);
+            alert("Failed to send friend request");
+        } finally {
+            setSending(false);
+        }
+    };
 
     return (
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6 border-b border-muted pb-6 relative">
@@ -99,6 +126,29 @@ export default function ProfileHeader({
                     </p>
                 )}
             </div>
+
+            {status === "authenticated" &&
+                !isOwnProfile &&
+                !isFriends &&
+                !sent && (
+                    <Button
+                        onClick={sendRequest}
+                        disabled={sending}
+                        style={{ backgroundColor: profileColor }}
+                        className="text-white"
+                    >
+                        {sending ? "Sending..." : "Send Friend Request"}
+                    </Button>
+                )}
+
+            {status === "authenticated" &&
+                !isOwnProfile &&
+                !isFriends &&
+                sent && (
+                    <span className="text-sm text-muted-foreground">
+                        Request Sent
+                    </span>
+                )}
         </div>
     );
 }
