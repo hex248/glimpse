@@ -59,7 +59,7 @@ export default async function ProfilePage({
                 profileColor={profileColor}
                 isFriends={isFriends}
             />
-            {isFriends ? (
+            {isFriends || session?.user.id === user.id ? (
                 user.photos.length === 0 ? (
                     <p className="text-center text-muted-foreground">
                         {user.username} hasn't shared any photos yet.
