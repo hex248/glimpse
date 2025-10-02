@@ -8,6 +8,46 @@ import {
     createNotificationPayload,
 } from "@/lib/pushNotifications";
 
+// list pending friend requests
+export async function GET() {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = session.user.id;
+
+    try {
+        const friendRequests = await prisma.friendRequest.findMany({
+            where: {
+                requestedId: userId,
+                status: "PENDING",
+            },
+            include: {
+                requester: {
+                    select: {
+                        id: true,
+                        username: true,
+                        name: true,
+                        color: true,
+                        image: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        return NextResponse.json(friendRequests, { status: 200 });
+    } catch (error) {
+        console.error("Failed to fetch friend requests:", error);
+        return NextResponse.json(
+            { error: "Failed to fetch friend requests" },
+            { status: 500 }
+        );
+    }
+}
+
 // send friend request
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
