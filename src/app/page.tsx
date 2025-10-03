@@ -2,13 +2,12 @@ import HomeComponent from "@/components/home";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
-
-
+import type { Photo, User } from "@prisma/client";
 
 export default async function Home() {
     const session = await getServerSession(authOptions);
 
-    let photos = [];
+    let photos: (Photo & { user: User })[] = [];
 
     if (session?.user?.id) {
         const friendships = await prisma.friendship.findMany({
