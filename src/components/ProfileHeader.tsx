@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Bell, Ellipsis, Settings2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,11 +48,13 @@ export default function ProfileHeader({
 }: ProfileHeaderProps) {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [sending, setSending] = useState(false);
     const [sent, setSent] = useState(false);
     const [isResponding, setIsResponding] = useState(false);
     const [requests, setRequests] = useState<FriendRequest[]>([]);
     const [loadingRequests, setLoadingRequests] = useState(false);
+    const [notificationsOpen, setNotificationsOpen] = useState(false);
 
     const isOwnProfile =
         status === "authenticated" && session?.user?.username === user.username;
@@ -79,6 +81,12 @@ export default function ProfileHeader({
             fetchRequests();
         }
     }, [isOwnProfile]);
+
+    useEffect(() => {
+        if (searchParams.get('showNotifications') === 'true') {
+            setNotificationsOpen(true);
+        }
+    }, [searchParams]);
 
     const respondToRequest = async (
         requestId: string,
@@ -130,7 +138,7 @@ export default function ProfileHeader({
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6 border-b border-muted pb-6 relative">
             {isOwnProfile && (
                 <div className="absolute top-0 right-0 flex items-center gap-2">
-                    <DropdownMenu>
+                    <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen}>
                         <DropdownMenuTrigger asChild>
                             <Button
                                 variant="ghost"
