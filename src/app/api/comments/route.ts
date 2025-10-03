@@ -59,36 +59,41 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        // create notification for photo owner if not the commenter
+        // create notification for photo owner if not the commenter and enabled
         if (photo.userId !== session.user.id) {
-            const commenter = await prisma.user.findUnique({
-                where: { id: session.user.id },
-                select: { username: true, name: true },
-            });
-            const commenterName =
-                commenter?.username || commenter?.name || "Someone";
-
-            await prisma.notification.create({
-                data: {
-                    userId: photo.userId,
-                    type: "comment",
-                    message: `${commenterName} commented on your photo`,
-                    photoId: photo.id,
-                },
+            const photoOwner = await prisma.user.findUnique({
+                where: { id: photo.userId },
+                select: { commentNotifications: true },
             });
 
-            try {
-                const payload = createNotificationPayload(
-                    "comment",
-                    `${commenterName} commented on your photo`,
-                    `${content.slice(0, 50)}${
-                        content.length > 50 ? "..." : ""
-                    }`,
-                    { url: `/photo/${photo.id}`, photoId: photo.id }
-                );
-                await sendPushNotificationToUser(photo.userId, payload);
-            } catch (pushError) {
-                console.error("failed to send push notification:", pushError);
+            if (photoOwner?.commentNotifications) {
+                const commenter = await prisma.user.findUnique({
+                    where: { id: session.user.id },
+                    select: { username: true, name: true },
+                });
+                const commenterName =
+                    commenter?.username || commenter?.name || "Someone";
+
+                await prisma.notification.create({
+                    data: {
+                        userId: photo.userId,
+                        type: "comment",
+                        message: `${commenterName} commented on your photo`,
+                        photoId: photo.id,
+                    },
+                });
+
+                try {
+                    const payload = createNotificationPayload(
+                        "comment",
+                        "New Comment",
+                        `${commenterName} commented on your photo`,
+                        { url: `/photo/${photo.id}`, photoId: photo.id }
+                    );
+                    await sendPushNotificationToUser(photo.userId, payload);
+                } catch (pushError) {
+                    console.error("failed to send push notification:", pushError);
+                }
             }
         }
 
