@@ -24,6 +24,10 @@ model User {
   color    String? @default("#aa6ef1")
   bio      String? @db.Text
 
+  postNotifications       Boolean @default(true)
+  commentNotifications    Boolean @default(true)
+  friendRequestNotifications Boolean @default(true)
+
   accounts Account[]
   sessions Session[]
 
