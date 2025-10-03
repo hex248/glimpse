@@ -3,19 +3,12 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 
-export const dynamic = "force-dynamic";
+
 
 export default async function Home() {
     const session = await getServerSession(authOptions);
 
-    let photos = await prisma.photo.findMany({
-        orderBy: {
-            createdAt: "desc",
-        },
-        include: {
-            user: true,
-        },
-    });
+    let photos = [];
 
     if (session?.user?.id) {
         const friendships = await prisma.friendship.findMany({
@@ -37,7 +30,19 @@ export default async function Home() {
         ]);
         friendIds.delete(session.user.id); // exclude self
 
-        photos = photos.filter((photo) => friendIds.has(photo.userId));
+        photos = await prisma.photo.findMany({
+            where: {
+                userId: {
+                    in: Array.from(friendIds),
+                },
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+            include: {
+                user: true,
+            },
+        });
     } else {
         photos = [];
     }
