@@ -60,6 +60,21 @@ export async function sendPushNotificationToUser(
     }
 }
 
+export async function sendPushNotificationToUsers(
+    payload: PushNotificationPayload,
+    userIds: Set<string>
+) {
+    try {
+        const sendPromises = Array.from(userIds).map((userId) =>
+            sendPushNotificationToUser(userId, payload)
+        );
+
+        await Promise.all(sendPromises);
+    } catch (error) {
+        console.error("error sending push notifications to friends:", error);
+    }
+}
+
 export async function sendPushNotificationToAllUsers(
     payload: PushNotificationPayload,
     excludeUserId?: string
