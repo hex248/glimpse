@@ -56,12 +56,6 @@ export async function POST(request: Request) {
             },
         });
 
-        console.log({
-            username: username,
-            name: name,
-            bio: bio,
-            color: color,
-        });
         return NextResponse.json({ success: true });
     } catch (error: any) {
         if (
