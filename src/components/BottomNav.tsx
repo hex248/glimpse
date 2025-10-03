@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Home, Search, UserRound, Plus } from "lucide-react";
 import { APP_PATHS } from "@/lib/APP_PATHS";
@@ -57,11 +58,9 @@ export default function BottomNav() {
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     return (
-                        <Button
+                        <Link
+                            href={item.href}
                             key={item.href}
-                            variant="ghost"
-                            size="lg"
-                            onClick={() => router.push(item.href)}
                             className="flex flex-1 items-start justify-center h-auto py-4 lg:py-4 px-6 rounded-none"
                             style={{
                                 color: item.isActive ? color : undefined,
@@ -75,7 +74,7 @@ export default function BottomNav() {
                                         : "stroke-current"
                                 )}
                             />
-                        </Button>
+                        </Link>
                     );
                 })}
             </div>
