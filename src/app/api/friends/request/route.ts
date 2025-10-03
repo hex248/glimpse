@@ -157,7 +157,7 @@ export async function POST(request: Request) {
                 "friend_request",
                 "New Friend Request",
                 `You have a friend request from ${requesterName}`,
-                { url: `/profile/${requester?.username}` }
+                { url: `/profile/${requestedUser?.username}?showNotifications=true` }
             );
             await sendPushNotificationToUser(requestedId, payload);
         } catch (pushError) {
