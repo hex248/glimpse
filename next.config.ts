@@ -34,6 +34,30 @@ const withPWA = require("next-pwa")({
     register: true,
     skipWaiting: true,
     disable: process.env.NODE_ENV === "development",
+    runtimeCaching: [
+        {
+            urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
+            handler: "CacheFirst",
+            options: {
+                cacheName: "images",
+                expiration: {
+                    maxEntries: 60,
+                    maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+                },
+            },
+        },
+        {
+            urlPattern: /_next\/static\/.*/,
+            handler: "CacheFirst",
+            options: {
+                cacheName: "static-files",
+                expiration: {
+                    maxEntries: 100,
+                    maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+                },
+            },
+        },
+    ],
 });
 
 module.exports = withPWA(nextConfig);
