@@ -1,7 +1,7 @@
 "use client";
 
 import { HexColorInput, HexColorPicker } from "react-colorful";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, LazyMotion, domAnimation, AnimatePresence } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -227,38 +227,44 @@ export default function ProfileForm({
                                                     disabled={loading}
                                                 />
                                             </div>
-                                            <AnimatePresence>
-                                                <motion.div
-                                                    initial={{
-                                                        height: 0,
-                                                        opacity: 0,
-                                                    }}
-                                                    animate={{
-                                                        height: "auto",
-                                                        opacity: 1,
-                                                    }}
-                                                    exit={{
-                                                        height: 0,
-                                                        opacity: 0,
-                                                    }}
-                                                    transition={{
-                                                        duration: 0.3,
-                                                        ease: "easeInOut",
-                                                    }}
-                                                    className="overflow-hidden w-fit outline-none"
-                                                >
-                                                    <HexColorPicker
-                                                        color={color}
-                                                        onChange={(_color) => {
-                                                            setColor(_color);
-                                                            field.onChange(
-                                                                _color
-                                                            );
+                                            <LazyMotion features={domAnimation}>
+                                                <AnimatePresence>
+                                                    <m.div
+                                                        initial={{
+                                                            height: 0,
+                                                            opacity: 0,
                                                         }}
-                                                        className="rounded-none"
-                                                    />
-                                                </motion.div>
-                                            </AnimatePresence>
+                                                        animate={{
+                                                            height: "auto",
+                                                            opacity: 1,
+                                                        }}
+                                                        exit={{
+                                                            height: 0,
+                                                            opacity: 0,
+                                                        }}
+                                                        transition={{
+                                                            duration: 0.3,
+                                                            ease: "easeInOut",
+                                                        }}
+                                                        className="overflow-hidden w-fit outline-none"
+                                                    >
+                                                        <HexColorPicker
+                                                            color={color}
+                                                            onChange={(
+                                                                _color
+                                                            ) => {
+                                                                setColor(
+                                                                    _color
+                                                                );
+                                                                field.onChange(
+                                                                    _color
+                                                                );
+                                                            }}
+                                                            className="rounded-none"
+                                                        />
+                                                    </m.div>
+                                                </AnimatePresence>
+                                            </LazyMotion>
                                         </div>
                                     </FormControl>
                                     <FormMessage />
