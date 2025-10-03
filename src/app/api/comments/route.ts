@@ -3,6 +3,10 @@ import { authOptions } from "@/lib/authOptions";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import {
+    sendPushNotificationToUser,
+    createNotificationPayload,
+} from "@/lib/pushNotifications";
 
 const commentSchema = z.object({
     photoId: z.string().min(1),
@@ -54,6 +58,39 @@ export async function POST(request: NextRequest) {
                 user: true,
             },
         });
+
+        // create notification for photo owner if not the commenter
+        if (photo.userId !== session.user.id) {
+            const commenter = await prisma.user.findUnique({
+                where: { id: session.user.id },
+                select: { username: true, name: true },
+            });
+            const commenterName =
+                commenter?.username || commenter?.name || "Someone";
+
+            await prisma.notification.create({
+                data: {
+                    userId: photo.userId,
+                    type: "comment",
+                    message: `${commenterName} commented on your photo`,
+                    photoId: photo.id,
+                },
+            });
+
+            try {
+                const payload = createNotificationPayload(
+                    "comment",
+                    `${commenterName} commented on your photo`,
+                    `${content.slice(0, 50)}${
+                        content.length > 50 ? "..." : ""
+                    }`,
+                    { url: `/photo/${photo.id}`, photoId: photo.id }
+                );
+                await sendPushNotificationToUser(photo.userId, payload);
+            } catch (pushError) {
+                console.error("failed to send push notification:", pushError);
+            }
+        }
 
         return NextResponse.json(comment, { status: 201 });
     } catch (error) {
