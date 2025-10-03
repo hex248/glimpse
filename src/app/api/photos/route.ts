@@ -77,6 +77,7 @@ export async function POST(request: Request) {
         const friends = await prisma.user.findMany({
             where: {
                 id: { in: Array.from(friendIds) },
+                postNotifications: true,
             },
             select: { id: true },
         });
@@ -112,7 +113,10 @@ export async function POST(request: Request) {
                 }
             );
 
-            await sendPushNotificationToUsers(notificationPayload, friendIds);
+            await sendPushNotificationToUsers(
+                notificationPayload,
+                new Set(friends.map((f) => f.id))
+            );
         } catch (pushError) {
             console.error("failed to send push notifications:", pushError);
         }
