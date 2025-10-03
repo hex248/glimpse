@@ -143,25 +143,33 @@ export async function POST(request: Request) {
         const requesterName =
             requester?.username || requester?.name || "Someone";
 
-        await prisma.notification.create({
-            data: {
-                userId: requestedId,
-                type: "friend request",
-                message: `You have a friend request from ${requesterName}`,
-            },
+        // check if requested user has friend request notifications enabled
+        const requestedUserWithPrefs = await prisma.user.findUnique({
+            where: { id: requestedId },
+            select: { friendRequestNotifications: true },
         });
 
-        // send push notification
-        try {
-            const payload = createNotificationPayload(
-                "friend_request",
-                "New Friend Request",
-                `You have a friend request from ${requesterName}`,
-                { url: `/profile/${requestedUser?.username}?showNotifications=true` }
-            );
-            await sendPushNotificationToUser(requestedId, payload);
-        } catch (pushError) {
-            console.error("failed to send push notification:", pushError);
+        if (requestedUserWithPrefs?.friendRequestNotifications) {
+            await prisma.notification.create({
+                data: {
+                    userId: requestedId,
+                    type: "friend request",
+                    message: `You have a friend request from ${requesterName}`,
+                },
+            });
+
+            // send push notification
+            try {
+                const payload = createNotificationPayload(
+                    "friend_request",
+                    "New Friend Request",
+                    `You have a friend request from ${requesterName}`,
+                    { url: `/profile/${requestedUser?.username}?showNotifications=true` }
+                );
+                await sendPushNotificationToUser(requestedId, payload);
+            } catch (pushError) {
+                console.error("failed to send push notification:", pushError);
+            }
         }
 
         return NextResponse.json(friendRequest, { status: 201 });

@@ -87,25 +87,33 @@ export async function PUT(
             const requestedName =
                 requestedUser?.username || requestedUser?.name || "Someone";
 
-            await prisma.notification.create({
-                data: {
-                    userId: requesterId,
-                    type: "friend request",
-                    message: `${requestedName} accepted your friend request`,
-                },
+            // check if requester has friend request notifications enabled
+            const requesterWithPrefs = await prisma.user.findUnique({
+                where: { id: requesterId },
+                select: { friendRequestNotifications: true },
             });
 
-            // send push notification
-            try {
-                const payload = createNotificationPayload(
-                    "friend_request",
-                    "Friend Request Accepted",
-                    `${requestedName} accepted your friend request`,
-                    { url: `/profile/${requestedUser?.username}` }
-                );
-                await sendPushNotificationToUser(requesterId, payload);
-            } catch (pushError) {
-                console.error("failed to send push notification:", pushError);
+            if (requesterWithPrefs?.friendRequestNotifications) {
+                await prisma.notification.create({
+                    data: {
+                        userId: requesterId,
+                        type: "friend request",
+                        message: `${requestedName} accepted your friend request`,
+                    },
+                });
+
+                // send push notification
+                try {
+                    const payload = createNotificationPayload(
+                        "friend_request",
+                        "Friend Request Accepted",
+                        `${requestedName} accepted your friend request`,
+                        { url: `/profile/${requestedUser?.username}` }
+                    );
+                    await sendPushNotificationToUser(requesterId, payload);
+                } catch (pushError) {
+                    console.error("failed to send push notification:", pushError);
+                }
             }
         }
 
