@@ -6,7 +6,7 @@ import { PhotoCreateAPISchema } from "@/lib/schemas";
 import { revalidatePath } from "next/cache";
 import { APP_PATHS } from "@/lib/APP_PATHS";
 import {
-    sendPushNotificationToAllUsers,
+    sendPushNotificationToUsers,
     createNotificationPayload,
 } from "@/lib/pushNotifications";
 
@@ -57,10 +57,26 @@ export async function POST(request: Request) {
             },
         });
 
-        // create notifications for all users except the poster
-        const users = await prisma.user.findMany({
+        // get friends of the poster
+        const friendships = await prisma.friendship.findMany({
             where: {
-                id: { not: userId },
+                OR: [{ user1Id: userId }, { user2Id: userId }],
+            },
+            select: {
+                user1Id: true,
+                user2Id: true,
+            },
+        });
+
+        const friendIds = new Set([
+            ...friendships.map((f) => f.user1Id),
+            ...friendships.map((f) => f.user2Id),
+        ]);
+        friendIds.delete(userId); // exclude the poster
+
+        const friends = await prisma.user.findMany({
+            where: {
+                id: { in: Array.from(friendIds) },
             },
             select: { id: true },
         });
@@ -70,11 +86,11 @@ export async function POST(request: Request) {
             newPhoto.user.username || newPhoto.user.name || "Someone"
         } posted a new photo${showCaption && caption ? `: "${caption}"` : ""}`;
 
-        // create notification records
-        const notificationPromises = users.map((user) =>
+        // create notification records for friends
+        const notificationPromises = friends.map((friend) =>
             prisma.notification.create({
                 data: {
-                    userId: user.id,
+                    userId: friend.id,
                     type: "photo_post",
                     message: notificationMessage,
                     photoId: newPhoto.id,
@@ -84,7 +100,7 @@ export async function POST(request: Request) {
 
         await Promise.all(notificationPromises);
 
-        // send to all subscribed
+        // send push notifications to friends
         try {
             const notificationPayload = createNotificationPayload(
                 "photo_post",
@@ -96,7 +112,7 @@ export async function POST(request: Request) {
                 }
             );
 
-            await sendPushNotificationToAllUsers(notificationPayload, userId);
+            await sendPushNotificationToUsers(notificationPayload, friendIds);
         } catch (pushError) {
             console.error("failed to send push notifications:", pushError);
         }
