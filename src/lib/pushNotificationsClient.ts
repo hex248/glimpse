@@ -39,7 +39,6 @@ export async function subscribeToPushNotifications(): Promise<boolean> {
             throw new Error("failed to save push subscription");
         }
 
-        console.log("successfully subscribed to push notifications");
         return true;
     } catch (error) {
         console.error("error subscribing to push notifications:", error);
@@ -76,7 +75,6 @@ export async function unsubscribeFromPushNotifications(): Promise<boolean> {
                 );
             }
 
-            console.log("successfully unsubscribed from push notifications");
             return true;
         }
 
